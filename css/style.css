@@ -765,7 +765,7 @@ ul { list-style: none; }
 
 .site-footer__grid {
   display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1fr;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr;
   gap: 2rem;
   margin-bottom: 2.5rem;
 }
@@ -806,6 +806,17 @@ ul { list-style: none; }
 .site-footer__links a:hover {
   opacity: 1;
   color: var(--color-primary);
+}
+
+.site-footer__links strong {
+  color: #fff;
+  font-weight: 600;
+}
+
+.site-footer__links li {
+  font-size: 0.875rem;
+  opacity: 0.7;
+  line-height: 1.5;
 }
 
 .site-footer__bottom {
