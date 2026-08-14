@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Banyuwangi Asyik Berita — Portal berita terpercaya dari Banyuwangi dan sekitarnya. Nasional, daerah, ekonomi, olahraga, dan lebih banyak lagi.">
+  <title>Banyuwangi Asyik Berita — Portal Berita Terkini</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="assets/logo.png" type="image/png">
+</head>
+<body>
+
+  <!-- Breaking News -->
+  <div class="breaking-bar" id="breaking-bar">
+    <div class="breaking-bar__label">Berita Terkini</div>
+    <div class="breaking-bar__track">
+      <div class="breaking-bar__items" id="breaking-ticker"></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="index.html" class="site-logo">
+        <img src="assets/logo.png" alt="Banyuwangi Asyik Berita Online" class="site-logo__img" width="180" height="52">
+      </a>
+
+      <nav class="site-nav" aria-label="Navigasi utama">
+        <a href="index.html" class="site-nav__link active">Beranda</a>
+        <a href="index.html#nasional" class="site-nav__link">Nasional</a>
+        <a href="index.html#daerah" class="site-nav__link">Daerah</a>
+        <a href="index.html#ekonomi" class="site-nav__link">Ekonomi</a>
+        <a href="index.html#olahraga" class="site-nav__link">Olahraga</a>
+        <a href="index.html#politik" class="site-nav__link">Politik</a>
+      </nav>
+
+      <div class="site-header__actions">
+        <time class="header-date" id="header-date"></time>
+        <button class="btn-search" id="btn-search" aria-label="Cari berita">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+          </svg>
+        </button>
+        <button class="btn-menu" id="btn-menu" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Mobile Nav -->
+  <nav class="mobile-nav" id="mobile-nav" aria-label="Navigasi mobile">
+    <a href="index.html" class="mobile-nav__link">Beranda</a>
+    <a href="index.html#nasional" class="mobile-nav__link">Nasional</a>
+    <a href="index.html#daerah" class="mobile-nav__link">Daerah</a>
+    <a href="index.html#ekonomi" class="mobile-nav__link">Ekonomi</a>
+    <a href="index.html#olahraga" class="mobile-nav__link">Olahraga</a>
+    <a href="index.html#politik" class="mobile-nav__link">Politik</a>
+    <a href="index.html#lingkungan" class="mobile-nav__link">Lingkungan</a>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero" id="hero-section"></section>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="main-grid">
+      <main>
+        <!-- Category Tabs -->
+        <div class="category-tabs" id="category-tabs"></div>
+
+        <!-- Latest News Grid -->
+        <div class="section-header">
+          <h2 class="section-header__title">Berita Terbaru</h2>
+        </div>
+        <div class="news-grid" id="news-grid"></div>
+
+        <!-- Stories Row -->
+        <div class="section-header">
+          <h2 class="section-header__title">Pilihan Redaksi</h2>
+        </div>
+        <div class="stories-row" id="stories-row"></div>
+
+        <!-- Category Sections -->
+        <div id="category-sections"></div>
+      </main>
+
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-widget sidebar-widget--dark">
+          <h3 class="sidebar-widget__title">Terpopuler</h3>
+          <ol class="most-read-list" id="most-read"></ol>
+        </div>
+
+        <div class="sidebar-widget">
+          <h3 class="sidebar-widget__title">Newsletter</h3>
+          <p style="font-size:0.875rem;color:var(--color-text-muted);margin-bottom:0.75rem;">
+            Dapatkan berita terkini Banyuwangi langsung ke email Anda setiap pagi.
+          </p>
+          <form class="newsletter-form" id="newsletter-form">
+            <input type="email" placeholder="Alamat email Anda" required aria-label="Email">
+            <button type="submit">Berlangganan</button>
+          </form>
+        </div>
+
+        <div class="sidebar-widget">
+          <h3 class="sidebar-widget__title">Ikuti Kami</h3>
+          <p style="font-size:0.875rem;color:var(--color-text-muted);line-height:1.6;">
+            Facebook · Instagram · X · YouTube<br>
+            <strong style="color:var(--color-dark);">@banyuwangi.asyikberita</strong>
+          </p>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div>
+          <img src="assets/logo.png" alt="Banyuwangi Asyik Berita Online" class="site-footer__logo" width="200" height="80">
+          <p class="site-footer__desc">
+            Portal berita independen yang menghadirkan informasi akurat dan tajam dari Banyuwangi, Jawa Timur, dan Indonesia. Dipercaya ribuan pembaca setiap hari.
+          </p>
+        </div>
+        <div>
+          <h4 class="site-footer__heading">Rubrik</h4>
+          <ul class="site-footer__links">
+            <li><a href="index.html#nasional">Nasional</a></li>
+            <li><a href="index.html#daerah">Daerah</a></li>
+            <li><a href="index.html#ekonomi">Ekonomi</a></li>
+            <li><a href="index.html#olahraga">Olahraga</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="site-footer__heading">Perusahaan</h4>
+          <ul class="site-footer__links">
+            <li><a href="#">Tentang Kami</a></li>
+            <li><a href="#">Redaksi</a></li>
+            <li><a href="#">Karir</a></li>
+            <li><a href="#">Kontak</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 class="site-footer__heading">Legal</h4>
+          <ul class="site-footer__links">
+            <li><a href="#">Kebijakan Privasi</a></li>
+            <li><a href="#">Syarat & Ketentuan</a></li>
+            <li><a href="#">Pedoman Media Siber</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="site-footer__bottom">
+        <span>&copy; 2026 Banyuwangi Asyik Berita. All rights reserved.</span>
+        <span>banyuwangi-asyikberita.online</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Search Modal -->
+  <div class="search-modal" id="search-modal" role="dialog" aria-label="Pencarian">
+    <div class="search-modal__box">
+      <button class="search-modal__close" id="search-close" aria-label="Tutup">&times;</button>
+      <input type="search" class="search-modal__input" id="search-input" placeholder="Cari berita..." autofocus>
+      <div class="search-results" id="search-results"></div>
+    </div>
+  </div>
+
+  <script src="js/articles.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      App.initHomepage();
+    });
+  </script>
+</body>
+</html>
