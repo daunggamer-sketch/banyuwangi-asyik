@@ -5,23 +5,35 @@
    ============================================ */
 
 :root {
-  /* Warna Tradisional Banyuwangi */
+  /* Warna Tradisional Banyuwangi - Enhanced */
   --color-primary: #8B4513; /* Coklat Kayu - warna tanah dan kayu tradisional */
-  --color-primary-dark: #654321; /* Coklat Gelap */
+  --color-primary-dark: #5D2E0C; /* Coklat Gelap lebih intens */
+  --color-primary-light: #A0522D; /* Coklat Sienna lebih terang */
   --color-accent: #C41E3A; /* Merah Tradisional - semangat dan keberanian */
+  --color-accent-dark: #8B0000; /* Merah Gelap */
+  --color-accent-light: #DC143C; /* Merah Crimson */
   --color-gold: #D4AF37; /* Emas - kemakmuran dan keindahan */
+  --color-gold-light: #FFD700; /* Emas lebih terang */
+  --color-gold-dark: #B8860B; /* Emas Gelap */
   --color-cream: #F5F5DC; /* Krem - warna netral tradisional */
+  --color-cream-dark: #F0E68C; /* Krem Khaki */
   
-  /* Warna Supporting */
-  --color-dark: #2C1810; /* Coklat sangat gelap */
-  --color-dark-soft: #3D2817;
-  --color-text: #1A1A1A;
-  --color-text-muted: #6B4423;
-  --color-text-light: #8B7355;
-  --color-border: #D2B48C;
-  --color-bg: #FFFEF7; /* Putih dengan sedikit nuansa krem */
-  --color-bg-alt: #F5F0E6; /* Background alternatif dengan nuansa earthy */
-  --color-bg-dark: #1A0F0A;
+  /* Warna Supporting - Enhanced */
+  --color-dark: #1A0F0A; /* Coklat sangat gelap */
+  --color-dark-soft: #2D1810;
+  --color-text: #2C1810;
+  --color-text-muted: #5D4037;
+  --color-text-light: #8D6E63;
+  --color-border: #BCAAA4;
+  --color-bg: #FFFBF0; /* Putih dengan nuansa krem lebih hangat */
+  --color-bg-alt: #F5E6D3; /* Background alternatif dengan nuansa earthy lebih kuat */
+  --color-bg-dark: #0D0705;
+  
+  /* Warna Tambahan untuk ornamen */
+  --color-terracotta: #E2725B;
+  --color-bronze: #CD7F32;
+  --color-jade: #00A86B;
+  --color-indigo: #4B0082;
   
   /* Font */
   --font-serif: "Playfair Display", "Noto Serif", Georgia, "Times New Roman", serif;
@@ -100,6 +112,12 @@ ul { list-style: none; }
   font-size: 0.6875rem;
   position: relative;
   z-index: 1;
+}
+
+.breaking-bar__label::after {
+  content: '✦';
+  margin-left: 0.5rem;
+  color: var(--color-gold);
 }
 
 .breaking-bar__track {
@@ -196,8 +214,8 @@ ul { list-style: none; }
 
 .site-nav__link:hover,
 .site-nav__link.active {
-  color: var(--color-accent);
-  border-bottom-color: var(--color-accent);
+  color: var(--color-accent-light);
+  border-bottom-color: var(--color-accent-light);
 }
 
 .site-header__actions {
@@ -225,8 +243,9 @@ ul { list-style: none; }
 }
 
 .btn-search:hover {
-  background: var(--color-gold);
+  background: var(--color-gold-light);
   color: var(--color-dark);
+  border-color: var(--color-gold-dark);
 }
 
 .btn-menu {
@@ -296,6 +315,17 @@ ul { list-style: none; }
     );
   pointer-events: none;
   z-index: 1;
+}
+
+.hero::after {
+  content: '⛰';
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  font-size: 3rem;
+  color: var(--color-gold);
+  opacity: 0.2;
+  z-index: 2;
 }
 
 .hero__link {
@@ -401,6 +431,33 @@ ul { list-style: none; }
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
   margin-bottom: 2.5rem;
+}
+
+.traditional-divider-news {
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    var(--color-primary), 
+    var(--color-gold), 
+    var(--color-accent), 
+    var(--color-gold), 
+    var(--color-primary), 
+    transparent
+  );
+  margin: 2rem 0;
+  position: relative;
+}
+
+.traditional-divider-news::before {
+  content: '✦';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-bg);
+  padding: 0 0.5rem;
+  color: var(--color-gold);
+  font-size: 1rem;
 }
 
 .news-card {
@@ -561,6 +618,16 @@ ul { list-style: none; }
   background: linear-gradient(90deg, var(--color-primary), var(--color-gold), var(--color-accent));
 }
 
+.sidebar-widget::after {
+  content: '✦';
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  font-size: 0.8rem;
+  color: var(--color-gold);
+  opacity: 0.5;
+}
+
 .sidebar-widget--dark {
   background: var(--color-dark);
   color: #fff;
@@ -703,6 +770,25 @@ ul { list-style: none; }
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem;
   margin-bottom: 2.5rem;
+  position: relative;
+}
+
+.stories-row::before {
+  content: '☙';
+  position: absolute;
+  top: -15px;
+  left: 0;
+  font-size: 1.2rem;
+  color: var(--color-gold);
+}
+
+.stories-row::after {
+  content: '❧';
+  position: absolute;
+  top: -15px;
+  right: 0;
+  font-size: 1.2rem;
+  color: var(--color-gold);
 }
 
 .story-card {
@@ -908,6 +994,8 @@ ul { list-style: none; }
   background: linear-gradient(90deg, var(--color-primary) 0%, var(--color-gold) 25%, var(--color-accent) 50%, var(--color-gold) 75%, var(--color-primary) 100%);
 }
 
+
+
 .site-footer__grid {
   display: grid;
   grid-template-columns: 2fr 1.5fr 1fr 1fr;
@@ -972,7 +1060,20 @@ ul { list-style: none; }
   align-items: center;
   font-size: 0.75rem;
   opacity: 0.5;
+  position: relative;
 }
+
+.site-footer__bottom::before {
+  content: '〰';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--color-gold);
+  font-size: 1rem;
+  letter-spacing: 0.3rem;
+}
+
 
 /* ---- Search Modal ---- */
 .search-modal {
@@ -1087,6 +1188,72 @@ ul { list-style: none; }
     );
 }
 
+/* Batik Kawung Pattern - Traditional Indonesian pattern */
+.batik-kawung {
+  background-color: var(--color-bg-alt);
+  background-image: 
+    radial-gradient(circle at 25% 25%, var(--color-gold) 2%, transparent 2.5%),
+    radial-gradient(circle at 75% 75%, var(--color-gold) 2%, transparent 2.5%),
+    radial-gradient(circle at 50% 50%, rgba(139, 69, 19, 0.1) 15%, transparent 15.5%);
+  background-size: 40px 40px;
+}
+
+/* Batik Mega Mendung Pattern - Cloud-inspired pattern */
+.batik-mendung {
+  background: linear-gradient(180deg, 
+    var(--color-bg-alt) 0%, 
+    rgba(139, 69, 19, 0.05) 25%, 
+    var(--color-bg-alt) 50%, 
+    rgba(196, 30, 58, 0.05) 75%, 
+    var(--color-bg-alt) 100%
+  );
+  background-size: 100% 20px;
+}
+
+/* Batik Parang Pattern - Diagonal pattern */
+.batik-parang {
+  background-color: var(--color-bg-alt);
+  background-image: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(139, 69, 19, 0.08) 20px,
+      rgba(139, 69, 19, 0.08) 40px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 20px,
+      rgba(212, 175, 55, 0.05) 20px,
+      rgba(212, 175, 55, 0.05) 40px
+    );
+}
+
+/* Batik Sekar Jagad Pattern - Floral pattern */
+.batik-sekar {
+  background-color: var(--color-bg-alt);
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(196, 30, 58, 0.08) 3%, transparent 3.5%),
+    radial-gradient(circle at 80% 70%, rgba(212, 175, 55, 0.08) 3%, transparent 3.5%),
+    radial-gradient(circle at 50% 50%, rgba(139, 69, 19, 0.05) 5%, transparent 5.5%),
+    radial-gradient(circle at 30% 80%, rgba(196, 30, 58, 0.06) 2%, transparent 2.5%),
+    radial-gradient(circle at 70% 20%, rgba(212, 175, 55, 0.06) 2%, transparent 2.5%);
+  background-size: 60px 60px;
+}
+
+/* Batik Truntum Pattern - Love pattern */
+.batik-truntum {
+  background-color: var(--color-bg-alt);
+  background-image: 
+    radial-gradient(ellipse at 50% 50%, rgba(139, 69, 19, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 25% 25%, var(--color-gold) 1.5%, transparent 2%),
+    radial-gradient(circle at 75% 25%, var(--color-gold) 1.5%, transparent 2%),
+    radial-gradient(circle at 25% 75%, var(--color-gold) 1.5%, transparent 2%),
+    radial-gradient(circle at 75% 75%, var(--color-gold) 1.5%, transparent 2%);
+  background-size: 50px 50px;
+}
+
 .batik-border {
   border: 2px solid var(--color-gold);
   position: relative;
@@ -1100,6 +1267,35 @@ ul { list-style: none; }
   right: -4px;
   bottom: -4px;
   border: 1px solid var(--color-primary);
+  pointer-events: none;
+}
+
+/* Complex Batik Border */
+.batik-border-complex {
+  border: 3px solid var(--color-primary);
+  position: relative;
+  padding: 1rem;
+}
+
+.batik-border-complex::before {
+  content: '';
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  right: -6px;
+  bottom: -6px;
+  border: 1px solid var(--color-gold);
+  pointer-events: none;
+}
+
+.batik-border-complex::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: -8px;
+  right: -8px;
+  bottom: -8px;
+  border: 1px dashed var(--color-accent);
   pointer-events: none;
 }
 
@@ -1122,6 +1318,21 @@ ul { list-style: none; }
   width: 100px;
   height: 3px;
   background: var(--color-gold);
+}
+
+.section-header__title {
+  position: relative;
+  padding-left: 1.5rem;
+}
+
+.section-header__title::before {
+  content: '✦';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-gold);
+  font-size: 0.8rem;
 }
 
 /* Traditional Indonesian decorative pattern */
@@ -1156,6 +1367,186 @@ ul { list-style: none; }
   bottom: -8px;
   left: 50%;
   transform: translateX(-50%);
+}
+
+/* Traditional Wayang-style Corner Decoration */
+.wayang-corner {
+  position: relative;
+}
+
+.wayang-corner::before {
+  content: '☙';
+  position: absolute;
+  top: -10px;
+  left: -10px;
+  font-size: 1.2rem;
+  color: var(--color-gold);
+}
+
+.wayang-corner::after {
+  content: '❧';
+  position: absolute;
+  bottom: -10px;
+  right: -10px;
+  font-size: 1.2rem;
+  color: var(--color-gold);
+}
+
+/* Traditional Leaf Ornament */
+.leaf-ornament {
+  position: relative;
+  padding: 1rem;
+}
+
+.leaf-ornament::before {
+  content: '🌿';
+  position: absolute;
+  top: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  color: var(--color-terracotta);
+}
+
+/* Traditional Geometric Pattern */
+.geometric-ornament {
+  background-image: 
+    linear-gradient(45deg, var(--color-primary) 25%, transparent 25%),
+    linear-gradient(-45deg, var(--color-primary) 25%, transparent 25%),
+    linear-gradient(45deg, transparent 75%, var(--color-primary) 75%),
+    linear-gradient(-45deg, transparent 75%, var(--color-primary) 75%);
+  background-size: 20px 20px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+  opacity: 0.1;
+}
+
+/* Traditional Indonesian Divider */
+.traditional-divider {
+  height: 3px;
+  background: linear-gradient(90deg, 
+    transparent, 
+    var(--color-primary), 
+    var(--color-gold), 
+    var(--color-accent), 
+    var(--color-gold), 
+    var(--color-primary), 
+    transparent
+  );
+  margin: 2rem 0;
+  position: relative;
+}
+
+.traditional-divider::before {
+  content: '✦';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--color-bg);
+  padding: 0 0.5rem;
+  color: var(--color-gold);
+  font-size: 1rem;
+}
+
+/* Cloud Ornament (Mendung) */
+.cloud-ornament {
+  position: relative;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, 
+    rgba(139, 69, 19, 0.05) 0%, 
+    transparent 100%
+  );
+  border-radius: 8px;
+}
+
+.cloud-ornament::before {
+  content: '☁';
+  position: absolute;
+  top: -15px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1.5rem;
+  color: var(--color-terracotta);
+}
+
+/* Star Ornament */
+.star-ornament {
+  position: relative;
+}
+
+.star-ornament::before {
+  content: '✧';
+  position: absolute;
+  top: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 1rem;
+  color: var(--color-gold);
+}
+
+/* Mountain Ornament (for hero sections) */
+.mountain-ornament {
+  position: relative;
+  overflow: hidden;
+}
+
+.mountain-ornament::after {
+  content: '⛰';
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+  font-size: 2rem;
+  color: var(--color-gold);
+  opacity: 0.3;
+}
+
+/* Traditional Frame */
+.traditional-frame {
+  border: 2px solid var(--color-primary);
+  padding: 1.5rem;
+  position: relative;
+  background: var(--color-bg-alt);
+}
+
+.traditional-frame::before,
+.traditional-frame::after {
+  content: '';
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--color-gold);
+}
+
+.traditional-frame::before {
+  top: -5px;
+  left: -5px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.traditional-frame::after {
+  bottom: -5px;
+  right: -5px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Water Ornament (for footer or sections near bottom) */
+.water-ornament {
+  position: relative;
+  padding-bottom: 1rem;
+}
+
+.water-ornament::after {
+  content: '〰';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: var(--color-jade);
+  font-size: 1.2rem;
+  letter-spacing: 0.5rem;
 }
 
 /* ---- Utilities ---- */
@@ -1226,5 +1617,11 @@ ul { list-style: none; }
     flex-direction: column;
     gap: 0.5rem;
     text-align: center;
+  }
+
+  .site-footer__bottom::before {
+    top: -10px;
+    left: 50%;
+    transform: translateX(-50%);
   }
 }
