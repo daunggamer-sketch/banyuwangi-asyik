@@ -328,6 +328,134 @@ ul { list-style: none; }
   z-index: 2;
 }
 
+/* Hero Gandrung Image - Left Side */
+.hero-gandrung {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 150px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.hero-gandrung__img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: contain;
+  filter: drop-shadow(2px 2px 8px rgba(0,0,0,0.3));
+}
+
+.hero-gandrung__placeholder {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-gold);
+  padding: 1rem;
+  background: rgba(26, 15, 10, 0.7);
+  border-radius: 8px;
+  border: 2px solid var(--color-gold);
+}
+
+.gandrung-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero-gandrung__placeholder p {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-indonesian);
+  margin: 0;
+}
+
+/* Hero Batik Pattern - Right Side */
+.hero-batik {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 150px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.hero-batik__img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: contain;
+  filter: drop-shadow(-2px 2px 8px rgba(0,0,0,0.3));
+}
+
+.hero-batik__placeholder {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--color-gold);
+  padding: 1rem;
+  background: rgba(26, 15, 10, 0.7);
+  border-radius: 8px;
+  border: 2px solid var(--color-gold);
+}
+
+.batik-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.hero-batik__placeholder p {
+  font-size: 0.875rem;
+  font-weight: 600;
+  font-family: var(--font-indonesian);
+  margin: 0;
+}
+
+/* Hero Article Section (for article page) */
+.hero-article {
+  position: relative;
+  height: 200px;
+  background: var(--color-dark);
+  margin-bottom: 2rem;
+  overflow: hidden;
+}
+
+.hero-article::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(212, 175, 55, 0.05) 20px,
+      rgba(212, 175, 55, 0.05) 40px
+    );
+  pointer-events: none;
+  z-index: 1;
+}
+
+@media (max-width: 768px) {
+  .hero-article {
+    height: 150px;
+  }
+}
+
 .hero__link {
   display: block;
   position: relative;
@@ -1596,6 +1724,32 @@ ul { list-style: none; }
   .hero__image { height: 320px; }
 
   .hero__content { padding: 1.5rem; }
+
+  /* Mobile adjustments for Gandrung and Batik */
+  .hero-gandrung,
+  .hero-batik {
+    width: 80px;
+  }
+
+  .hero-gandrung__img,
+  .hero-batik__img {
+    max-height: 120px;
+  }
+
+  .hero-gandrung__placeholder,
+  .hero-batik__placeholder {
+    padding: 0.5rem;
+  }
+
+  .gandrung-icon,
+  .batik-icon {
+    font-size: 1.5rem;
+  }
+
+  .hero-gandrung__placeholder p,
+  .hero-batik__placeholder p {
+    font-size: 0.75rem;
+  }
 
   .news-grid {
     grid-template-columns: 1fr;
