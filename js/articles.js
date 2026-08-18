@@ -155,20 +155,32 @@ const ARTICLES = [
 
 const CATEGORIES = ["Semua", "Nasional", "Daerah", "Ekonomi", "Olahraga", "Politik", "Lingkungan"];
 
+// Wrap ARTICLES agar menyertakan artikel unggahan wartawan
+// (auth.js di-load setelah articles.js)
+function getAllNews() {
+  if (typeof getAllArticles === "function") {
+    return getAllArticles();
+  }
+  return ARTICLES;
+}
+
 function getArticleById(id) {
-  return ARTICLES.find(a => a.id === Number(id));
+  return getAllNews().find(a => a.id === Number(id));
 }
 
 function getArticleBySlug(slug) {
-  return ARTICLES.find(a => a.slug === slug);
+  return getAllNews().find(a => a.slug === slug);
 }
 
 function getFeaturedArticle() {
-  return ARTICLES.find(a => a.featured) || ARTICLES[0];
+  const news = getAllNews();
+  const featured = news.find(a => a.featured) || news[0];
+  // Jika artikel unggahan tersedia dan tidak ada featured, gunakan yang terbaru
+  return featured || (typeof getUploadedArticles === "function" && getUploadedArticles()[0]) || news[0];
 }
 
 function getBreakingNews() {
-  return ARTICLES.filter(a => a.breaking);
+  return getAllNews().filter(a => a.breaking);
 }
 
 /**
@@ -177,6 +189,7 @@ function getBreakingNews() {
  * dengan fallback ke urutan default jika tidak ada data.
  */
 function getMostRead(limit = 5) {
+  const news = getAllNews();
   let views = {};
   try {
     views = JSON.parse(localStorage.getItem("bab_views") || "{}");
@@ -186,21 +199,22 @@ function getMostRead(limit = 5) {
 
   const viewCounts = Object.keys(views).length;
   if (viewCounts > 0) {
-    return [...ARTICLES]
+    return [...news]
       .sort((a, b) => (views[b.id] || 0) - (views[a.id] || 0))
       .slice(0, limit);
   }
 
   // Fallback: urutkan berdasarkan tanggal terbaru
-  return [...ARTICLES]
+  return [...news]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, limit);
 }
 
 function getByCategory(category, limit) {
+  const news = getAllNews();
   const filtered = category === "Semua"
-    ? ARTICLES
-    : ARTICLES.filter(a => a.category === category);
+    ? news
+    : news.filter(a => a.category === category);
   return limit ? filtered.slice(0, limit) : filtered;
 }
 
@@ -238,12 +252,13 @@ function getRelativeTime(dateStr) {
 }
 
 function getSuggestedArticles(currentId, limit = 3) {
-  const current = ARTICLES.find(a => a.id === Number(currentId));
-  if (!current) return ARTICLES.slice(0, limit);
+  const news = getAllNews();
+  const current = news.find(a => a.id === Number(currentId));
+  if (!current) return news.slice(0, limit);
 
-  const sameCategory = ARTICLES.filter(a => a.id !== current.id && a.category === current.category);
+  const sameCategory = news.filter(a => a.id !== current.id && a.category === current.category);
   if (sameCategory.length >= limit) return sameCategory.slice(0, limit);
 
-  const others = ARTICLES.filter(a => a.id !== current.id && a.category !== current.category);
+  const others = news.filter(a => a.id !== current.id && a.category !== current.category);
   return [...sameCategory, ...others].slice(0, limit);
 }

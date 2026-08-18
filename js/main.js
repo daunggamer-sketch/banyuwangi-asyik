@@ -5,6 +5,7 @@ const App = {
     this.initSearch();
     this.initMobileMenu();
     this.initNewsletter();
+    this.renderAuthNav();
   },
 
   initHomepage() {
@@ -60,6 +61,7 @@ const App = {
       </header>
       <img class="article-hero-image" src="${article.image}" alt="${article.imageAlt}">
       <p class="article-hero-caption">${article.imageAlt}</p>
+      ${article.video ? getVideoEmbedHtml(article.video, article.title) : ""}
       <div class="article-body">${article.content}</div>
       <div class="article-share">
         <span class="article-share__label">Bagikan</span>
@@ -80,7 +82,7 @@ const App = {
 
   renderBreakingTicker() {
     const breaking = getBreakingNews();
-    const items = breaking.length ? breaking : ARTICLES.slice(0, 3);
+    const items = breaking.length ? breaking : getAllNews().slice(0, 3);
     const html = [...items, ...items].map(a => `
       <a href="${this.articleUrl(a)}" class="breaking-bar__item">${a.title}</a>
     `).join("");
@@ -97,6 +99,28 @@ const App = {
         month: "long",
         year: "numeric"
       });
+    }
+  },
+
+  renderAuthNav() {
+    const el = document.getElementById("auth-nav");
+    if (!el) return;
+
+    if (isLoggedIn()) {
+      const user = getCurrentUser();
+      el.innerHTML = `
+        <a href="dashboard.html" class="auth-nav__link auth-nav__link--user" title="Dashboard wartawan">👤 ${user.name.split(" ")[0]}</a>
+        <a href="#" class="auth-nav__link auth-nav__link--logout" id="auth-logout">Keluar</a>`;
+      const logoutBtn = document.getElementById("auth-logout");
+      logoutBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        logoutUser();
+        window.location.reload();
+      });
+    } else {
+      el.innerHTML = `
+        <a href="login.html" class="auth-nav__link">Masuk</a>
+        <a href="signup.html" class="auth-nav__link auth-nav__link--cta">Daftar</a>`;
     }
   },
 
@@ -169,8 +193,8 @@ const App = {
 
     // Pilih artikel editor's choice: 1 artikel featured + 2 lainnya
     const featured = getFeaturedArticle();
-    const others = ARTICLES.filter(a => a.id !== featured.id).slice(0, 2);
-    const editorPicks = featured ? [featured, ...others] : ARTICLES.slice(0, 3);
+    const others = getAllNews().filter(a => a.id !== featured.id).slice(0, 2);
+    const editorPicks = featured ? [featured, ...others] : getAllNews().slice(0, 3);
 
     el.innerHTML = editorPicks.map(a => `
       <a href="${this.articleUrl(a)}" class="story-card">
@@ -252,11 +276,11 @@ const App = {
     const el = document.getElementById("related-articles");
     if (!el) return;
 
-    const related = ARTICLES
+    const related = getAllNews()
       .filter(a => a.id !== current.id && a.category === current.category)
       .slice(0, 3);
 
-    const fallback = ARTICLES.filter(a => a.id !== current.id).slice(0, 3);
+    const fallback = getAllNews().filter(a => a.id !== current.id).slice(0, 3);
     const articles = related.length ? related : fallback;
 
     el.innerHTML = `
@@ -318,7 +342,7 @@ const App = {
 
       // Debounce 150ms
       debounceTimer = setTimeout(() => {
-        const matched = ARTICLES.filter(a =>
+        const matched = getAllNews().filter(a =>
           a.title.toLowerCase().includes(query) ||
           a.excerpt.toLowerCase().includes(query) ||
           a.category.toLowerCase().includes(query)
@@ -492,4 +516,63 @@ function escapeHtml(text) {
   const div = document.createElement("div");
   div.textContent = text;
   return div.innerHTML;
+}
+
+/**
+ * Konversi URL video menjadi embed HTML
+ * Mendukung YouTube, Vimeo, dan Google Drive
+ */
+function getVideoEmbedHtml(url, title) {
+  if (!url) return "";
+
+  // YouTube
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (ytMatch) {
+    return `
+      <div class="article-video">
+        <iframe
+          src="https://www.youtube.com/embed/${ytMatch[1]}"
+          title="${escapeHtml(title)}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy"></iframe>
+      </div>`;
+  }
+
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) {
+    return `
+      <div class="article-video">
+        <iframe
+          src="https://player.vimeo.com/video/${vimeoMatch[1]}"
+          title="${escapeHtml(title)}"
+          frameborder="0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+          loading="lazy"></iframe>
+      </div>`;
+  }
+
+  // Google Drive
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (driveMatch) {
+    return `
+      <div class="article-video">
+        <iframe
+          src="https://drive.google.com/file/d/${driveMatch[1]}/preview"
+          title="${escapeHtml(title)}"
+          frameborder="0"
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+          loading="lazy"></iframe>
+      </div>`;
+  }
+
+  // Fallback: link biasa
+  return `
+    <div class="article-video article-video--link">
+      <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">🎥 Tonton Video Terkait</a>
+    </div>`;
 }
