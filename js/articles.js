@@ -171,8 +171,30 @@ function getBreakingNews() {
   return ARTICLES.filter(a => a.breaking);
 }
 
+/**
+ * Mendapatkan artikel terpopuler.
+ * Menggunakan data views dari localStorage (disimpan oleh App.trackArticleView),
+ * dengan fallback ke urutan default jika tidak ada data.
+ */
 function getMostRead(limit = 5) {
-  return [...ARTICLES].slice(0, limit);
+  let views = {};
+  try {
+    views = JSON.parse(localStorage.getItem("bab_views") || "{}");
+  } catch {
+    views = {};
+  }
+
+  const viewCounts = Object.keys(views).length;
+  if (viewCounts > 0) {
+    return [...ARTICLES]
+      .sort((a, b) => (views[b.id] || 0) - (views[a.id] || 0))
+      .slice(0, limit);
+  }
+
+  // Fallback: urutkan berdasarkan tanggal terbaru
+  return [...ARTICLES]
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, limit);
 }
 
 function getByCategory(category, limit) {
@@ -213,4 +235,15 @@ function getRelativeTime(dateStr) {
   const diffDays = Math.floor(diffHours / 24);
   if (diffDays === 1) return "Kemarin";
   return `${diffDays} hari lalu`;
+}
+
+function getSuggestedArticles(currentId, limit = 3) {
+  const current = ARTICLES.find(a => a.id === Number(currentId));
+  if (!current) return ARTICLES.slice(0, limit);
+
+  const sameCategory = ARTICLES.filter(a => a.id !== current.id && a.category === current.category);
+  if (sameCategory.length >= limit) return sameCategory.slice(0, limit);
+
+  const others = ARTICLES.filter(a => a.id !== current.id && a.category !== current.category);
+  return [...sameCategory, ...others].slice(0, limit);
 }

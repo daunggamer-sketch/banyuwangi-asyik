@@ -911,6 +911,87 @@ ul { list-style: none; }
   border-bottom: 1px solid var(--color-border);
 }
 
+/* ---- Newsletter Message ---- */
+.newsletter-form__message {
+  font-size: 0.8125rem;
+  margin-top: 0.75rem;
+  line-height: 1.4;
+  min-height: 1.25rem;
+}
+
+.newsletter-form__message--success {
+  color: #1a7f37;
+}
+
+.newsletter-form__message--error {
+  color: var(--color-primary);
+}
+
+/* ---- Toast Notification ---- */
+.toast {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--color-dark);
+  color: #fff;
+  padding: 0.875rem 1.5rem;
+  border-radius: 4px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  z-index: 300;
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  pointer-events: none;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  max-width: 90vw;
+  text-align: center;
+}
+
+.toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+/* ---- Search Highlight ---- */
+.search-result-item mark {
+  background: #ffe58f;
+  color: var(--color-dark);
+  padding: 0 0.125rem;
+  border-radius: 2px;
+}
+
+/* ---- Focus Styles (Aksesibilitas) ---- */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* ---- Reduced Motion ---- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .breaking-bar__items {
+    animation: none;
+    flex-wrap: wrap;
+    height: 100%;
+    overflow-y: auto;
+  }
+}
+
 /* ---- Utilities ---- */
 .sr-only {
   position: absolute;

@@ -4,12 +4,33 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Banyuwangi Asyik Berita — Portal berita terpercaya dari Banyuwangi dan sekitarnya. Nasional, daerah, ekonomi, olahraga, dan lebih banyak lagi.">
+  <meta name="keywords" content="Banyuwangi, berita, portal berita, berita Banyuwangi, berita Jawa Timur, berita Indonesia">
+  <meta name="author" content="Banyuwangi Asyik Berita">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#bb1919">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Banyuwangi Asyik Berita">
+  <meta property="og:title" content="Banyuwangi Asyik Berita — Portal Berita Terkini">
+  <meta property="og:description" content="Portal berita terpercaya dari Banyuwangi dan sekitarnya. Nasional, daerah, ekonomi, olahraga, dan lebih banyak lagi.">
+  <meta property="og:url" content="https://banyuwangi-asyikberita.online/">
+  <meta property="og:image" content="assets/logo.png">
+  <meta property="og:locale" content="id_ID">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Banyuwangi Asyik Berita — Portal Berita Terkini">
+  <meta name="twitter:description" content="Portal berita terpercaya dari Banyuwangi dan sekitarnya.">
+  <meta name="twitter:image" content="assets/logo.png">
+
   <title>Banyuwangi Asyik Berita — Portal Berita Terkini</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="canonical" href="https://banyuwangi-asyikberita.online/">
 </head>
 <body>
 
@@ -24,27 +45,28 @@
   <!-- Header -->
   <header class="site-header">
     <div class="site-header__inner">
-      <a href="index.html" class="site-logo">
+      <a href="index.html" class="site-logo" aria-label="Banyuwangi Asyik Berita - Beranda">
         <img src="assets/logo.png" alt="Banyuwangi Asyik Berita Online" class="site-logo__img" width="180" height="52">
       </a>
 
       <nav class="site-nav" aria-label="Navigasi utama">
-        <a href="index.html" class="site-nav__link active">Beranda</a>
+        <a href="index.html" class="site-nav__link active" aria-current="page">Beranda</a>
         <a href="index.html#nasional" class="site-nav__link">Nasional</a>
         <a href="index.html#daerah" class="site-nav__link">Daerah</a>
         <a href="index.html#ekonomi" class="site-nav__link">Ekonomi</a>
         <a href="index.html#olahraga" class="site-nav__link">Olahraga</a>
         <a href="index.html#politik" class="site-nav__link">Politik</a>
+        <a href="index.html#lingkungan" class="site-nav__link">Lingkungan</a>
       </nav>
 
       <div class="site-header__actions">
         <time class="header-date" id="header-date"></time>
         <button class="btn-search" id="btn-search" aria-label="Cari berita">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
           </svg>
         </button>
-        <button class="btn-menu" id="btn-menu" aria-label="Menu">
+        <button class="btn-menu" id="btn-menu" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="mobile-nav">
           <span></span><span></span><span></span>
         </button>
       </div>
@@ -63,14 +85,14 @@
   </nav>
 
   <!-- Hero -->
-  <section class="hero" id="hero-section"></section>
+  <section class="hero" id="hero-section" aria-label="Berita utama"></section>
 
   <!-- Main Content -->
   <div class="container">
     <div class="main-grid">
       <main>
         <!-- Category Tabs -->
-        <div class="category-tabs" id="category-tabs"></div>
+        <div class="category-tabs" id="category-tabs" role="tablist" aria-label="Kategori berita"></div>
 
         <!-- Latest News Grid -->
         <div class="section-header">
@@ -101,9 +123,10 @@
             Dapatkan berita terkini Banyuwangi langsung ke email Anda setiap pagi.
           </p>
           <form class="newsletter-form" id="newsletter-form">
-            <input type="email" placeholder="Alamat email Anda" required aria-label="Email">
+            <input type="email" placeholder="Alamat email Anda" required aria-label="Alamat email">
             <button type="submit">Berlangganan</button>
           </form>
+          <p class="newsletter-form__message" id="newsletter-message" role="status" aria-live="polite"></p>
         </div>
 
         <div class="sidebar-widget">
@@ -134,6 +157,8 @@
             <li><a href="index.html#daerah">Daerah</a></li>
             <li><a href="index.html#ekonomi">Ekonomi</a></li>
             <li><a href="index.html#olahraga">Olahraga</a></li>
+            <li><a href="index.html#politik">Politik</a></li>
+            <li><a href="index.html#lingkungan">Lingkungan</a></li>
           </ul>
         </div>
         <div>
@@ -162,9 +187,9 @@
   </footer>
 
   <!-- Search Modal -->
-  <div class="search-modal" id="search-modal" role="dialog" aria-label="Pencarian">
+  <div class="search-modal" id="search-modal" role="dialog" aria-label="Pencarian" aria-modal="true">
     <div class="search-modal__box">
-      <button class="search-modal__close" id="search-close" aria-label="Tutup">&times;</button>
+      <button class="search-modal__close" id="search-close" aria-label="Tutup pencarian">&times;</button>
       <input type="search" class="search-modal__input" id="search-input" placeholder="Cari berita..." autofocus>
       <div class="search-results" id="search-results"></div>
     </div>

@@ -4,15 +4,37 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Baca artikel lengkap di Banyuwangi Asyik Berita">
+  <meta name="keywords" content="Banyuwangi, berita, artikel, portal berita">
+  <meta name="author" content="Banyuwangi Asyik Berita">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#bb1919">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Banyuwangi Asyik Berita">
+  <meta property="og:title" content="Artikel — Banyuwangi Asyik Berita">
+  <meta property="og:description" content="Baca artikel lengkap di Banyuwangi Asyik Berita">
+  <meta property="og:url" content="https://banyuwangi-asyikberita.online/article.html">
+  <meta property="og:image" content="assets/logo.png">
+  <meta property="og:locale" content="id_ID">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Artikel — Banyuwangi Asyik Berita">
+  <meta name="twitter:description" content="Baca artikel lengkap di Banyuwangi Asyik Berita">
+  <meta name="twitter:image" content="assets/logo.png">
+
   <title>Artikel — Banyuwangi Asyik Berita</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="canonical" href="https://banyuwangi-asyikberita.online/article.html">
 </head>
 <body>
 
+  <!-- Breaking News -->
   <div class="breaking-bar" id="breaking-bar">
     <div class="breaking-bar__label">Berita Terkini</div>
     <div class="breaking-bar__track">
@@ -20,11 +42,13 @@
     </div>
   </div>
 
+  <!-- Header -->
   <header class="site-header">
     <div class="site-header__inner">
-      <a href="index.html" class="site-logo">
+      <a href="index.html" class="site-logo" aria-label="Banyuwangi Asyik Berita - Beranda">
         <img src="assets/logo.png" alt="Banyuwangi Asyik Berita Online" class="site-logo__img" width="180" height="52">
       </a>
+
       <nav class="site-nav" aria-label="Navigasi utama">
         <a href="index.html" class="site-nav__link">Beranda</a>
         <a href="index.html#nasional" class="site-nav__link">Nasional</a>
@@ -32,21 +56,24 @@
         <a href="index.html#ekonomi" class="site-nav__link">Ekonomi</a>
         <a href="index.html#olahraga" class="site-nav__link">Olahraga</a>
         <a href="index.html#politik" class="site-nav__link">Politik</a>
+        <a href="index.html#lingkungan" class="site-nav__link">Lingkungan</a>
       </nav>
+
       <div class="site-header__actions">
         <time class="header-date" id="header-date"></time>
         <button class="btn-search" id="btn-search" aria-label="Cari berita">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
           </svg>
         </button>
-        <button class="btn-menu" id="btn-menu" aria-label="Menu">
+        <button class="btn-menu" id="btn-menu" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="mobile-nav">
           <span></span><span></span><span></span>
         </button>
       </div>
     </div>
   </header>
 
+  <!-- Mobile Nav -->
   <nav class="mobile-nav" id="mobile-nav" aria-label="Navigasi mobile">
     <a href="index.html" class="mobile-nav__link">Beranda</a>
     <a href="index.html#nasional" class="mobile-nav__link">Nasional</a>
@@ -54,16 +81,19 @@
     <a href="index.html#ekonomi" class="mobile-nav__link">Ekonomi</a>
     <a href="index.html#olahraga" class="mobile-nav__link">Olahraga</a>
     <a href="index.html#politik" class="mobile-nav__link">Politik</a>
+    <a href="index.html#lingkungan" class="mobile-nav__link">Lingkungan</a>
   </nav>
 
+  <!-- Article Content -->
   <div class="container">
     <article id="article-content">
       <!-- Rendered by JS -->
     </article>
 
-    <section class="related-articles container" id="related-articles" style="padding-bottom:3rem;"></section>
+    <section class="related-articles" id="related-articles" style="padding-bottom:3rem;"></section>
   </div>
 
+  <!-- Footer -->
   <footer class="site-footer">
     <div class="container">
       <div class="site-footer__grid">
@@ -80,6 +110,8 @@
             <li><a href="index.html#daerah">Daerah</a></li>
             <li><a href="index.html#ekonomi">Ekonomi</a></li>
             <li><a href="index.html#olahraga">Olahraga</a></li>
+            <li><a href="index.html#politik">Politik</a></li>
+            <li><a href="index.html#lingkungan">Lingkungan</a></li>
           </ul>
         </div>
         <div>
@@ -105,9 +137,10 @@
     </div>
   </footer>
 
-  <div class="search-modal" id="search-modal" role="dialog" aria-label="Pencarian">
+  <!-- Search Modal -->
+  <div class="search-modal" id="search-modal" role="dialog" aria-label="Pencarian" aria-modal="true">
     <div class="search-modal__box">
-      <button class="search-modal__close" id="search-close" aria-label="Tutup">&times;</button>
+      <button class="search-modal__close" id="search-close" aria-label="Tutup pencarian">&times;</button>
       <input type="search" class="search-modal__input" id="search-input" placeholder="Cari berita...">
       <div class="search-results" id="search-results"></div>
     </div>
