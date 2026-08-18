@@ -11,6 +11,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css">
   <link rel="icon" href="assets/logo.png" type="image/png">
+
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <style>
     .dash-header {
       background: var(--color-bg);
@@ -425,19 +431,22 @@
         </div>
 
         <div class="article-form__group">
-          <label class="article-form__label" for="article-image">URL Gambar / Foto</label>
-          <input type="url" id="article-image" class="article-form__input" placeholder="https://contoh.com/gambar.jpg" required>
-          <p class="article-form__hint">Tempel URL gambar dari Unsplash, Google Images, atau media lainnya.</p>
+          <label class="article-form__label" for="article-image">Foto Berita</label>
+          <input type="file" id="article-image" class="article-form__input" accept="image/*" required>
+          <p class="article-form__hint">Pilih foto dari perangkat Anda (JPG, PNG, GIF, WebP — maksimal 5 MB).</p>
           <div class="media-preview" id="image-preview" style="display:none;">
             <img id="image-preview-img" src="" alt="Pratinjau gambar">
-            <span>Pratinjau gambar</span>
+            <span id="image-preview-name">Pratinjau gambar</span>
           </div>
         </div>
 
         <div class="article-form__group">
-          <label class="article-form__label" for="article-video">URL Video (Opsional)</label>
-          <input type="url" id="article-video" class="article-form__input" placeholder="https://youtube.com/... atau https://drive.google.com/...">
-          <p class="article-form__hint">Tempel link video YouTube, Google Drive, atau video online lainnya.</p>
+          <label class="article-form__label" for="article-video">Video Berita (Opsional)</label>
+          <input type="file" id="article-video" class="article-form__input" accept="video/*">
+          <p class="article-form__hint">Pilih video dari perangkat Anda (MP4, WebM — maksimal 100 MB).</p>
+          <div class="media-preview" id="video-preview" style="display:none;">
+            <span>🎥 <span id="video-preview-name">Video siap diunggah</span></span>
+          </div>
         </div>
 
         <div id="article-message"></div>
@@ -455,6 +464,7 @@
   <div class="toast" id="dash-toast" role="status"></div>
 
   <script src="js/articles.js"></script>
+  <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script src="js/dashboard.js"></script>
 </body>

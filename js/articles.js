@@ -155,17 +155,38 @@ const ARTICLES = [
 
 const CATEGORIES = ["Semua", "Nasional", "Daerah", "Ekonomi", "Olahraga", "Politik", "Lingkungan"];
 
-// Wrap ARTICLES agar menyertakan artikel unggahan wartawan
-// (auth.js di-load setelah articles.js)
-function getAllNews() {
-  if (typeof getAllArticles === "function") {
-    return getAllArticles();
+// ==================== CACHE ARTIKEL FIREBASE ====================
+let firebaseArticlesCache = [];
+let firebaseArticlesLoaded = false;
+
+/**
+ * Muat artikel dari Firebase ke cache (dipanggil async sebelum render)
+ */
+async function loadFirebaseArticles() {
+  try {
+    if (typeof getUploadedArticlesFromFirebase === "function") {
+      const articles = await getUploadedArticlesFromFirebase();
+      firebaseArticlesCache = articles.map(a => ({
+        ...a,
+        id: a.id,
+        fromNewsroom: true,
+        date: a.date || new Date().toISOString()
+      }));
+      firebaseArticlesLoaded = true;
+    }
+  } catch (error) {
+    console.error("Gagal memuat artikel Firebase:", error);
   }
-  return ARTICLES;
+}
+
+// ==================== FUNGSI GET ====================
+
+function getAllNews() {
+  return [...firebaseArticlesCache, ...ARTICLES];
 }
 
 function getArticleById(id) {
-  return getAllNews().find(a => a.id === Number(id));
+  return getAllNews().find(a => String(a.id) === String(id));
 }
 
 function getArticleBySlug(slug) {
@@ -174,20 +195,13 @@ function getArticleBySlug(slug) {
 
 function getFeaturedArticle() {
   const news = getAllNews();
-  const featured = news.find(a => a.featured) || news[0];
-  // Jika artikel unggahan tersedia dan tidak ada featured, gunakan yang terbaru
-  return featured || (typeof getUploadedArticles === "function" && getUploadedArticles()[0]) || news[0];
+  return news.find(a => a.featured) || news[0] || ARTICLES[0];
 }
 
 function getBreakingNews() {
   return getAllNews().filter(a => a.breaking);
 }
 
-/**
- * Mendapatkan artikel terpopuler.
- * Menggunakan data views dari localStorage (disimpan oleh App.trackArticleView),
- * dengan fallback ke urutan default jika tidak ada data.
- */
 function getMostRead(limit = 5) {
   const news = getAllNews();
   let views = {};
@@ -204,7 +218,6 @@ function getMostRead(limit = 5) {
       .slice(0, limit);
   }
 
-  // Fallback: urutkan berdasarkan tanggal terbaru
   return [...news]
     .sort((a, b) => new Date(b.date) - new Date(a.date))
     .slice(0, limit);
@@ -217,6 +230,20 @@ function getByCategory(category, limit) {
     : news.filter(a => a.category === category);
   return limit ? filtered.slice(0, limit) : filtered;
 }
+
+function getSuggestedArticles(currentId, limit = 3) {
+  const news = getAllNews();
+  const current = news.find(a => String(a.id) === String(currentId));
+  if (!current) return news.slice(0, limit);
+
+  const sameCategory = news.filter(a => String(a.id) !== String(currentId) && a.category === current.category);
+  if (sameCategory.length >= limit) return sameCategory.slice(0, limit);
+
+  const others = news.filter(a => String(a.id) !== String(currentId) && a.category !== current.category);
+  return [...sameCategory, ...others].slice(0, limit);
+}
+
+// ==================== FORMAT ====================
 
 function formatDate(dateStr) {
   const date = new Date(dateStr);
@@ -249,16 +276,4 @@ function getRelativeTime(dateStr) {
   const diffDays = Math.floor(diffHours / 24);
   if (diffDays === 1) return "Kemarin";
   return `${diffDays} hari lalu`;
-}
-
-function getSuggestedArticles(currentId, limit = 3) {
-  const news = getAllNews();
-  const current = news.find(a => a.id === Number(currentId));
-  if (!current) return news.slice(0, limit);
-
-  const sameCategory = news.filter(a => a.id !== current.id && a.category === current.category);
-  if (sameCategory.length >= limit) return sameCategory.slice(0, limit);
-
-  const others = news.filter(a => a.id !== current.id && a.category !== current.category);
-  return [...sameCategory, ...others].slice(0, limit);
 }

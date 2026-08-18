@@ -1,26 +1,112 @@
 /**
  * Sistem Autentikasi & Manajemen Artikel Wartawan
- * Menggunakan localStorage sebagai database sederhana
+ * Menggunakan Firebase Auth + Firestore + Storage (database terpusat)
  */
 
-const AUTH_KEYS = {
-  USERS: "bab_users",
-  SESSION: "bab_session",
-  UPLOADED_ARTICLES: "bab_uploaded_articles"
-};
+// ==================== AUTH (Firebase) ====================
 
-// ==================== AUTH ====================
-
-function getUsers() {
+/**
+ * Registrasi user baru
+ */
+async function registerUser({ name, username, email, password }) {
   try {
-    return JSON.parse(localStorage.getItem(AUTH_KEYS.USERS) || "[]");
-  } catch {
-    return [];
+    // Buat akun di Firebase Auth
+    const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+    const user = userCredential.user;
+
+    // Simpan profil ke Firestore
+    await db.collection("users").doc(user.uid).set({
+      name,
+      username,
+      email,
+      role: "wartawan",
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+
+    return { success: true, message: "Registrasi berhasil! Silakan login." };
+  } catch (error) {
+    let message = error.message;
+    if (error.code === "auth/email-already-in-use") {
+      message = "Email sudah terdaftar.";
+    } else if (error.code === "auth/invalid-email") {
+      message = "Format email tidak valid.";
+    } else if (error.code === "auth/weak-password") {
+      message = "Password terlalu lemah, minimal 6 karakter.";
+    }
+    return { success: false, message };
   }
 }
 
-function saveUsers(users) {
-  localStorage.setItem(AUTH_KEYS.USERS, JSON.stringify(users));
+/**
+ * Login user
+ */
+async function loginUser(identifier, password) {
+  try {
+    const email = identifier.includes("@") ? identifier : `${identifier}@placeholder.firebase`;
+    let userCredential;
+
+    if (email.includes("placeholder.firebase")) {
+      // Jika login pakai username, cari email-nya dulu di Firestore
+      const snapshot = await db.collection("users")
+        .where("username", "==", identifier)
+        .limit(1)
+        .get();
+
+      if (snapshot.empty) {
+        return { success: false, message: "Username tidak ditemukan." };
+      }
+
+      const userData = snapshot.docs[0].data();
+      userCredential = await auth.signInWithEmailAndPassword(userData.email, password);
+    } else {
+      userCredential = await auth.signInWithEmailAndPassword(email, password);
+    }
+
+    const user = userCredential.user;
+
+    // Ambil data profil dari Firestore
+    const doc = await db.collection("users").doc(user.uid).get();
+    let userData = {
+      id: user.uid,
+      email: user.email,
+      name: user.email.split("@")[0],
+      username: user.email.split("@")[0],
+      role: "wartawan"
+    };
+
+    if (doc.exists) {
+      userData = {
+        id: user.uid,
+        email: doc.data().email || user.email,
+        name: doc.data().name || userData.name,
+        username: doc.data().username || userData.username,
+        role: doc.data().role || "wartawan"
+      };
+    }
+
+    // Simpan sesi
+    setSession(userData);
+    return { success: true, message: "Login berhasil!", user: userData };
+  } catch (error) {
+    let message = error.message;
+    if (error.code === "auth/user-not-found") {
+      message = "Email tidak terdaftar. Silakan daftar dulu.";
+    } else if (error.code === "auth/wrong-password") {
+      message = "Password salah.";
+    } else if (error.code === "auth/invalid-email") {
+      message = "Format email tidak valid.";
+    }
+    return { success: false, message };
+  }
+}
+
+async function logoutUser() {
+  try {
+    await auth.signOut();
+  } catch (e) {
+    // Abaikan
+  }
+  clearSession();
 }
 
 function getCurrentUser() {
@@ -43,68 +129,117 @@ function isLoggedIn() {
   return getCurrentUser() !== null;
 }
 
-function registerUser({ name, username, email, password }) {
-  const users = getUsers();
+// ==================== ARTIKEL (Firestore) ====================
 
-  // Validasi username unik
-  if (users.some(u => u.username.toLowerCase() === username.toLowerCase())) {
-    return { success: false, message: "Username sudah digunakan." };
+/**
+ * Ambil semua artikel dari Firestore
+ */
+async function getUploadedArticlesFromFirebase() {
+  try {
+    const snapshot = await db.collection("articles").orderBy("date", "desc").get();
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("Gagal mengambil artikel:", error);
+    // Fallback ke localStorage
+    return getUploadedArticlesLocal();
   }
-
-  // Validasi email unik
-  if (users.some(u => u.email.toLowerCase() === email.toLowerCase())) {
-    return { success: false, message: "Email sudah terdaftar." };
-  }
-
-  const user = {
-    id: Date.now(),
-    name,
-    username,
-    email,
-    password: btoa(password), // Enkripsi sederhana (bukan untuk produksi)
-    role: "wartawan",
-    createdAt: new Date().toISOString()
-  };
-
-  users.push(user);
-  saveUsers(users);
-  return { success: true, message: "Registrasi berhasil! Silakan login." };
 }
 
-function loginUser(identifier, password) {
-  const users = getUsers();
-  const user = users.find(u =>
-    (u.username.toLowerCase() === identifier.toLowerCase() ||
-     u.email.toLowerCase() === identifier.toLowerCase())
-  );
-
-  if (!user) {
-    return { success: false, message: "Username/email tidak ditemukan." };
+/**
+ * Simpan artikel baru ke Firestore
+ */
+async function createUploadedArticleFirebase(articleData) {
+  try {
+    const docRef = await db.collection("articles").add({
+      ...articleData,
+      createdAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
+    return { id: docRef.id, ...articleData };
+  } catch (error) {
+    console.error("Gagal menyimpan artikel:", error);
+    throw error;
   }
-
-  if (user.password !== btoa(password)) {
-    return { success: false, message: "Password salah." };
-  }
-
-  // Simpan sesi tanpa password
-  const sessionUser = {
-    id: user.id,
-    name: user.name,
-    username: user.username,
-    email: user.email,
-    role: user.role
-  };
-  setSession(sessionUser);
-  return { success: true, message: "Login berhasil!", user: sessionUser };
 }
 
-function logoutUser() {
-  clearSession();
+/**
+ * Hapus artikel dari Firestore
+ */
+async function deleteUploadedArticleFirebase(id) {
+  try {
+    await db.collection("articles").doc(id).delete();
+    return true;
+  } catch (error) {
+    console.error("Gagal menghapus artikel:", error);
+    throw error;
+  }
 }
 
-// ==================== ARTIKEL WARTAWAN ====================
+/**
+ * Ambil artikel milik penulis tertentu
+ */
+async function getArticleByAuthorFirebase(username) {
+  try {
+    const snapshot = await db.collection("articles")
+      .where("authorUsername", "==", username)
+      .orderBy("date", "desc")
+      .get();
+    return snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+  } catch (error) {
+    console.error("Gagal mengambil artikel penulis:", error);
+    return [];
+  }
+}
 
-function getUploadedArticles() {
+// ==================== UPLOAD FILE (Storage) ====================
+
+/**
+ * Upload file (foto/video) ke Firebase Storage
+ */
+async function uploadFileFirebase(file, path) {
+  try {
+    const storageRef = storage.ref(`${path}/${Date.now()}_${file.name}`);
+    const snapshot = await storageRef.put(file);
+    const downloadURL = await snapshot.ref.getDownloadURL();
+    return downloadURL;
+  } catch (error) {
+    console.error("Gagal upload file:", error);
+    throw error;
+  }
+}
+
+// ==================== KOMPATIBILITAS (wrapper) ====================
+
+/**
+ * Fungsi wrapper agar kode lama tetap berfungsi.
+ * Mencoba Firebase dulu, fallback ke localStorage.
+ */
+
+const AUTH_KEYS = {
+  USERS: "bab_users",
+  SESSION: "bab_session",
+  UPLOADED_ARTICLES: "bab_uploaded_articles"
+};
+
+// LocalStorage helpers (fallback)
+function getUsers() {
+  try {
+    return JSON.parse(localStorage.getItem(AUTH_KEYS.USERS) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveUsers(users) {
+  localStorage.setItem(AUTH_KEYS.USERS, JSON.stringify(users));
+}
+
+function getUploadedArticlesLocal() {
   try {
     return JSON.parse(localStorage.getItem(AUTH_KEYS.UPLOADED_ARTICLES) || "[]");
   } catch {
@@ -117,49 +252,26 @@ function saveUploadedArticles(articles) {
 }
 
 function getArticleByAuthor(username) {
-  return getUploadedArticles().filter(a => a.authorUsername === username);
+  // Gunakan Firebase untuk artikel penulis
+  return getArticleByAuthorFirebase(username);
+}
+
+function getUploadedArticles() {
+  // Gunakan Firebase untuk semua artikel
+  return getUploadedArticlesFromFirebase();
 }
 
 function createUploadedArticle(articleData) {
-  const articles = getUploadedArticles();
-  const newArticle = {
-    id: Date.now(),
-    slug: generateSlug(articleData.title),
-    title: articleData.title,
-    excerpt: articleData.excerpt,
-    category: articleData.category,
-    author: articleData.authorName,
-    authorUsername: articleData.authorUsername,
-    date: new Date().toISOString(),
-    readTime: calculateReadTime(articleData.content),
-    featured: false,
-    breaking: false,
-    image: articleData.image || "",
-    imageAlt: articleData.imageAlt || articleData.title,
-    video: articleData.video || "",
-    content: articleData.content,
-    status: "published",
-    views: 0
-  };
-  articles.unshift(newArticle);
-  saveUploadedArticles(articles);
-  return newArticle;
-}
-
-function updateUploadedArticle(id, updates) {
-  const articles = getUploadedArticles();
-  const index = articles.findIndex(a => a.id === Number(id));
-  if (index === -1) return null;
-  articles[index] = { ...articles[index], ...updates };
-  saveUploadedArticles(articles);
-  return articles[index];
+  // Gunakan Firebase untuk simpan artikel
+  return createUploadedArticleFirebase(articleData);
 }
 
 function deleteUploadedArticle(id) {
-  let articles = getUploadedArticles();
-  articles = articles.filter(a => a.id !== Number(id));
-  saveUploadedArticles(articles);
+  // Gunakan Firebase untuk hapus artikel
+  return deleteUploadedArticleFirebase(id);
 }
+
+// ==================== HELPER ====================
 
 function generateSlug(text) {
   return text
@@ -176,17 +288,25 @@ function calculateReadTime(html) {
   return Math.max(1, Math.round(words / 200));
 }
 
-// Gabungkan artikel statis + artikel unggahan wartawan
-function getAllArticles() {
-  const uploaded = getUploadedArticles().map(a => ({
+/**
+ * Gabungkan artikel statis + artikel dari Firebase
+ * (async — harus dipanggil dengan await)
+ */
+async function getAllArticles() {
+  let uploaded = [];
+  try {
+    uploaded = await getUploadedArticlesFromFirebase();
+  } catch {
+    uploaded = getUploadedArticlesLocal();
+  }
+  const mapped = uploaded.map(a => ({
     ...a,
     id: a.id,
-    fromNewsroom: true
+    fromNewsroom: true,
+    date: a.date || new Date().toISOString()
   }));
-  return [...uploaded, ...ARTICLES];
+  return [...mapped, ...ARTICLES];
 }
-
-// ==================== HELPER ====================
 
 function showAuthMessage(el, message, type = "error") {
   if (!el) return;
