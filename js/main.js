@@ -5,6 +5,7 @@ const App = {
     this.initSearch();
     this.initMobileMenu();
     this.initNewsletter();
+    this.renderAuthNav();
   },
 
   initHomepage() {
@@ -25,17 +26,27 @@ const App = {
     const article = slug ? getArticleBySlug(slug) : getArticleById(id);
 
     if (!article) {
+      document.title = "Artikel Tidak Ditemukan — Banyuwangi Asyik Berita";
       document.getElementById("article-content").innerHTML = `
         <div class="article-header text-center" style="padding:4rem 0;">
           <h1 class="article-header__title">Artikel Tidak Ditemukan</h1>
           <p class="article-header__excerpt">Maaf, artikel yang Anda cari tidak tersedia.</p>
-          <a href="index.html" style="color:var(--color-primary);font-weight:600;">← Kembali ke Beranda</a>
+          <a href="index.html" style="color:var(--color-primary);font-weight:600;">&larr; Kembali ke Beranda</a>
         </div>`;
       return;
     }
 
+    // Update meta tags untuk SEO & social sharing
     document.title = `${article.title} — Banyuwangi Asyik Berita`;
-    document.querySelector('meta[name="description"]').content = article.excerpt;
+    document.querySelector('meta[name="description"]').setAttribute("content", article.excerpt);
+    document.querySelector('meta[property="og:title"]').setAttribute("content", article.title);
+    document.querySelector('meta[property="og:description"]').setAttribute("content", article.excerpt);
+    document.querySelector('meta[property="og:image"]').setAttribute("content", article.image);
+    document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
+    document.querySelector('meta[name="twitter:title"]').setAttribute("content", article.title);
+    document.querySelector('meta[name="twitter:description"]').setAttribute("content", article.excerpt);
+    document.querySelector('meta[name="twitter:image"]').setAttribute("content", article.image);
+    document.querySelector('link[rel="canonical"]').setAttribute("href", window.location.href);
 
     document.getElementById("article-content").innerHTML = `
       <header class="article-header">
@@ -44,31 +55,34 @@ const App = {
         <p class="article-header__excerpt">${article.excerpt}</p>
         <div class="article-header__meta">
           <span class="article-header__author">Oleh ${article.author}</span>
-          <span>${formatDate(article.date)}</span>
+          <span><time datetime="${article.date}">${formatDate(article.date)}</time></span>
           <span>${article.readTime} menit baca</span>
         </div>
       </header>
       <img class="article-hero-image" src="${article.image}" alt="${article.imageAlt}">
       <p class="article-hero-caption">${article.imageAlt}</p>
+      ${article.video ? getVideoEmbedHtml(article.video, article.title) : ""}
       <div class="article-body">${article.content}</div>
       <div class="article-share">
         <span class="article-share__label">Bagikan</span>
         <button class="article-share__btn" onclick="App.shareArticle('facebook')">Facebook</button>
         <button class="article-share__btn" onclick="App.shareArticle('twitter')">X / Twitter</button>
         <button class="article-share__btn" onclick="App.shareArticle('whatsapp')">WhatsApp</button>
-        <button class="article-share__btn" onclick="App.copyLink()">Salin Link</button>
+        <button class="article-share__btn" onclick="App.copyLink(this)">Salin Link</button>
       </div>`;
 
     this.renderRelatedArticles(article);
+    this.trackArticleView(article.id);
   },
 
+  // URL SEO-friendly menggunakan slug
   articleUrl(article) {
-    return `article.html?id=${article.id}`;
+    return `article.html?slug=${article.slug}`;
   },
 
   renderBreakingTicker() {
     const breaking = getBreakingNews();
-    const items = breaking.length ? breaking : ARTICLES.slice(0, 3);
+    const items = breaking.length ? breaking : getAllNews().slice(0, 3);
     const html = [...items, ...items].map(a => `
       <a href="${this.articleUrl(a)}" class="breaking-bar__item">${a.title}</a>
     `).join("");
@@ -88,6 +102,28 @@ const App = {
     }
   },
 
+  renderAuthNav() {
+    const el = document.getElementById("auth-nav");
+    if (!el) return;
+
+    if (isLoggedIn()) {
+      const user = getCurrentUser();
+      el.innerHTML = `
+        <a href="dashboard.html" class="auth-nav__link auth-nav__link--user" title="Dashboard wartawan">👤 ${user.name.split(" ")[0]}</a>
+        <a href="#" class="auth-nav__link auth-nav__link--logout" id="auth-logout">Keluar</a>`;
+      const logoutBtn = document.getElementById("auth-logout");
+      logoutBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        logoutUser();
+        window.location.reload();
+      });
+    } else {
+      el.innerHTML = `
+        <a href="login.html" class="auth-nav__link">Masuk</a>
+        <a href="signup.html" class="auth-nav__link auth-nav__link--cta">Daftar</a>`;
+    }
+  },
+
   renderHero() {
     const article = getFeaturedArticle();
     const el = document.getElementById("hero-section");
@@ -95,7 +131,7 @@ const App = {
 
     el.innerHTML = `
       <a href="${this.articleUrl(article)}" class="hero__link">
-        <img class="hero__image" src="${article.image}" alt="${article.imageAlt}">
+        <img class="hero__image" src="${article.image}" alt="${article.imageAlt}" fetchpriority="high">
         <div class="hero__overlay"></div>
         <div class="hero__content">
           <span class="hero__category">${article.category}</span>
@@ -104,7 +140,7 @@ const App = {
           <div class="hero__meta">
             <span>${article.author}</span>
             <span>${getRelativeTime(article.date)}</span>
-            <span>${article.readTime} min read</span>
+            <span>${article.readTime} menit baca</span>
           </div>
         </div>
       </a>`;
@@ -115,14 +151,18 @@ const App = {
     if (!el) return;
 
     el.innerHTML = CATEGORIES.map((cat, i) => `
-      <button class="category-tabs__btn${i === 0 ? " active" : ""}" data-category="${cat}">${cat}</button>
+      <button class="category-tabs__btn${i === 0 ? " active" : ""}" data-category="${cat}" role="tab" aria-selected="${i === 0 ? "true" : "false"}">${cat}</button>
     `).join("");
 
     el.addEventListener("click", (e) => {
       const btn = e.target.closest(".category-tabs__btn");
       if (!btn) return;
-      el.querySelectorAll(".category-tabs__btn").forEach(b => b.classList.remove("active"));
+      el.querySelectorAll(".category-tabs__btn").forEach(b => {
+        b.classList.remove("active");
+        b.setAttribute("aria-selected", "false");
+      });
       btn.classList.add("active");
+      btn.setAttribute("aria-selected", "true");
       this.renderNewsGrid(btn.dataset.category);
     });
   },
@@ -141,7 +181,7 @@ const App = {
           <div class="news-card__category">${a.category}</div>
           <h3 class="news-card__title">${a.title}</h3>
           <p class="news-card__excerpt">${a.excerpt}</p>
-          <div class="news-card__meta">${getRelativeTime(a.date)} · ${a.readTime} min</div>
+          <div class="news-card__meta">${getRelativeTime(a.date)} &middot; ${a.readTime} menit</div>
         </div>
       </a>
     `).join("");
@@ -151,8 +191,12 @@ const App = {
     const el = document.getElementById("stories-row");
     if (!el) return;
 
-    const articles = ARTICLES.slice(2, 5);
-    el.innerHTML = articles.map(a => `
+    // Pilih artikel editor's choice: 1 artikel featured + 2 lainnya
+    const featured = getFeaturedArticle();
+    const others = getAllNews().filter(a => a.id !== featured.id).slice(0, 2);
+    const editorPicks = featured ? [featured, ...others] : getAllNews().slice(0, 3);
+
+    el.innerHTML = editorPicks.map(a => `
       <a href="${this.articleUrl(a)}" class="story-card">
         <img class="story-card__image" src="${a.image}" alt="${a.imageAlt}" loading="lazy">
         <div class="story-card__content">
@@ -176,7 +220,7 @@ const App = {
         <section id="${slug}" style="margin-bottom:2.5rem;">
           <div class="section-header">
             <h2 class="section-header__title">${cat}</h2>
-            <a href="#" class="section-header__link" data-category="${cat}">Lihat Semua →</a>
+            <a href="#" class="section-header__link" data-category="${cat}">Lihat Semua &rarr;</a>
           </div>
           <div class="news-grid" style="grid-template-columns:1fr;">
             ${articles.map(a => `
@@ -201,7 +245,9 @@ const App = {
         e.preventDefault();
         const cat = link.dataset.category;
         document.querySelectorAll(".category-tabs__btn").forEach(btn => {
-          btn.classList.toggle("active", btn.dataset.category === cat);
+          const isMatch = btn.dataset.category === cat;
+          btn.classList.toggle("active", isMatch);
+          btn.setAttribute("aria-selected", isMatch ? "true" : "false");
         });
         this.renderNewsGrid(cat);
         document.getElementById("category-tabs").scrollIntoView({ behavior: "smooth" });
@@ -230,11 +276,11 @@ const App = {
     const el = document.getElementById("related-articles");
     if (!el) return;
 
-    const related = ARTICLES
+    const related = getAllNews()
       .filter(a => a.id !== current.id && a.category === current.category)
       .slice(0, 3);
 
-    const fallback = ARTICLES.filter(a => a.id !== current.id).slice(0, 3);
+    const fallback = getAllNews().filter(a => a.id !== current.id).slice(0, 3);
     const articles = related.length ? related : fallback;
 
     el.innerHTML = `
@@ -263,9 +309,12 @@ const App = {
 
     if (!modal) return;
 
+    // Debounce untuk performa pencarian
+    let debounceTimer;
+
     btnOpen?.addEventListener("click", () => {
       modal.classList.add("open");
-      input?.focus();
+      setTimeout(() => input?.focus(), 50);
     });
 
     btnClose?.addEventListener("click", () => modal.classList.remove("open"));
@@ -276,29 +325,38 @@ const App = {
 
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") modal.classList.remove("open");
+      if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+        e.preventDefault();
+        modal.classList.toggle("open");
+        if (modal.classList.contains("open")) setTimeout(() => input?.focus(), 50);
+      }
     });
 
     input?.addEventListener("input", () => {
+      clearTimeout(debounceTimer);
       const query = input.value.trim().toLowerCase();
       if (!query) {
         results.innerHTML = "";
         return;
       }
 
-      const matched = ARTICLES.filter(a =>
-        a.title.toLowerCase().includes(query) ||
-        a.excerpt.toLowerCase().includes(query) ||
-        a.category.toLowerCase().includes(query)
-      );
+      // Debounce 150ms
+      debounceTimer = setTimeout(() => {
+        const matched = getAllNews().filter(a =>
+          a.title.toLowerCase().includes(query) ||
+          a.excerpt.toLowerCase().includes(query) ||
+          a.category.toLowerCase().includes(query)
+        );
 
-      results.innerHTML = matched.length
-        ? matched.map(a => `
-            <a href="${this.articleUrl(a)}" class="search-result-item">
-              <div class="search-result-item__title">${a.title}</div>
-              <div class="search-result-item__meta">${a.category} · ${formatShortDate(a.date)}</div>
-            </a>
-          `).join("")
-        : `<p style="padding:1rem 0;color:var(--color-text-muted);">Tidak ada hasil untuk "${query}"</p>`;
+        results.innerHTML = matched.length
+          ? matched.map(a => `
+              <a href="${this.articleUrl(a)}" class="search-result-item">
+                <div class="search-result-item__title">${highlightMatch(a.title, query)}</div>
+                <div class="search-result-item__meta">${a.category} &middot; ${formatShortDate(a.date)}</div>
+              </a>
+            `).join("")
+          : `<p style="padding:1rem 0;color:var(--color-text-muted);">Tidak ada hasil untuk &ldquo;${escapeHtml(query)}&rdquo;</p>`;
+      }, 150);
     });
   },
 
@@ -307,17 +365,57 @@ const App = {
     const nav = document.getElementById("mobile-nav");
     if (!btn || !nav) return;
 
-    btn.addEventListener("click", () => nav.classList.toggle("open"));
+    const toggleMenu = (open) => {
+      nav.classList.toggle("open", open);
+      btn.setAttribute("aria-expanded", String(open));
+      btn.setAttribute("aria-label", open ? "Tutup menu navigasi" : "Buka menu navigasi");
+      document.body.style.overflow = open ? "hidden" : "";
+    };
+
+    btn.addEventListener("click", () => {
+      toggleMenu(!nav.classList.contains("open"));
+    });
+
     nav.querySelectorAll(".mobile-nav__link").forEach(link => {
-      link.addEventListener("click", () => nav.classList.remove("open"));
+      link.addEventListener("click", () => toggleMenu(false));
+    });
+
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && nav.classList.contains("open")) {
+        toggleMenu(false);
+      }
     });
   },
 
   initNewsletter() {
     const form = document.getElementById("newsletter-form");
-    form?.addEventListener("submit", (e) => {
+    const messageEl = document.getElementById("newsletter-message");
+    if (!form) return;
+
+    form.addEventListener("submit", (e) => {
       e.preventDefault();
-      alert("Terima kasih! Anda telah berlangganan newsletter Banyuwangi Asyik Berita.");
+      const emailInput = form.querySelector('input[type="email"]');
+      const email = emailInput.value.trim();
+
+      if (!isValidEmail(email)) {
+        showNewsletterMessage(messageEl, "Masukkan alamat email yang valid.", "error");
+        emailInput.focus();
+        return;
+      }
+
+      // Simpan ke localStorage sebagai data langganan (simulasi)
+      let subscribers = [];
+      try {
+        subscribers = JSON.parse(localStorage.getItem("bab_subscribers") || "[]");
+      } catch {
+        subscribers = [];
+      }
+      if (!subscribers.includes(email)) {
+        subscribers.push(email);
+        localStorage.setItem("bab_subscribers", JSON.stringify(subscribers));
+      }
+
+      showNewsletterMessage(messageEl, "Terima kasih! Anda telah berlangganan newsletter kami.", "success");
       form.reset();
     });
   },
@@ -330,12 +428,151 @@ const App = {
       twitter: `https://twitter.com/intent/tweet?url=${url}&text=${title}`,
       whatsapp: `https://wa.me/?text=${title}%20${url}`
     };
-    window.open(links[platform], "_blank", "width=600,height=400");
+    window.open(links[platform], "_blank", "width=600,height=400,noopener,noreferrer");
   },
 
-  copyLink() {
-    navigator.clipboard.writeText(window.location.href).then(() => {
-      alert("Link artikel berhasil disalin!");
-    });
+  copyLink(btn) {
+    const url = window.location.href;
+    const copyFallback = () => {
+      // Fallback untuk browser lama
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      try {
+        document.execCommand("copy");
+      } catch (err) {
+        // Abaikan
+      }
+      document.body.removeChild(textarea);
+    };
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(url).then(() => {
+        showToast("Link artikel berhasil disalin!");
+      }).catch(() => {
+        copyFallback();
+        showToast("Link artikel berhasil disalin!");
+      });
+    } else {
+      copyFallback();
+      showToast("Link artikel berhasil disalin!");
+    }
+  },
+
+  // Simulasi pelacakan views (untuk fitur "Terpopuler" di masa depan)
+  trackArticleView(id) {
+    try {
+      let views = JSON.parse(localStorage.getItem("bab_views") || "{}");
+      views[id] = (views[id] || 0) + 1;
+      localStorage.setItem("bab_views", JSON.stringify(views));
+    } catch {
+      // Abaikan jika localStorage tidak tersedia
+    }
   }
 };
+
+// ---- Helper Functions ----
+
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function showNewsletterMessage(el, message, type) {
+  if (!el) return;
+  el.textContent = message;
+  el.className = `newsletter-form__message newsletter-form__message--${type}`;
+  setTimeout(() => {
+    el.textContent = "";
+    el.className = "newsletter-form__message";
+  }, 5000);
+}
+
+function showToast(message) {
+  let toast = document.querySelector(".toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "toast";
+    toast.setAttribute("role", "status");
+    document.body.appendChild(toast);
+  }
+  toast.textContent = message;
+  toast.classList.add("show");
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => toast.classList.remove("show"), 2500);
+}
+
+function highlightMatch(text, query) {
+  const safeText = escapeHtml(text);
+  const safeQuery = escapeHtml(query);
+  const escaped = safeQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const regex = new RegExp(`(${escaped})`, "gi");
+  return safeText.replace(regex, "<mark>$1</mark>");
+}
+
+function escapeHtml(text) {
+  const div = document.createElement("div");
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/**
+ * Konversi URL video menjadi embed HTML
+ * Mendukung YouTube, Vimeo, dan Google Drive
+ */
+function getVideoEmbedHtml(url, title) {
+  if (!url) return "";
+
+  // YouTube
+  const ytMatch = url.match(/(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/);
+  if (ytMatch) {
+    return `
+      <div class="article-video">
+        <iframe
+          src="https://www.youtube.com/embed/${ytMatch[1]}"
+          title="${escapeHtml(title)}"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          loading="lazy"></iframe>
+      </div>`;
+  }
+
+  // Vimeo
+  const vimeoMatch = url.match(/vimeo\.com\/(\d+)/);
+  if (vimeoMatch) {
+    return `
+      <div class="article-video">
+        <iframe
+          src="https://player.vimeo.com/video/${vimeoMatch[1]}"
+          title="${escapeHtml(title)}"
+          frameborder="0"
+          allow="autoplay; fullscreen; picture-in-picture"
+          allowfullscreen
+          loading="lazy"></iframe>
+      </div>`;
+  }
+
+  // Google Drive
+  const driveMatch = url.match(/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (driveMatch) {
+    return `
+      <div class="article-video">
+        <iframe
+          src="https://drive.google.com/file/d/${driveMatch[1]}/preview"
+          title="${escapeHtml(title)}"
+          frameborder="0"
+          allow="autoplay; encrypted-media"
+          allowfullscreen
+          loading="lazy"></iframe>
+      </div>`;
+  }
+
+  // Fallback: link biasa
+  return `
+    <div class="article-video article-video--link">
+      <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer">🎥 Tonton Video Terkait</a>
+    </div>`;
+}

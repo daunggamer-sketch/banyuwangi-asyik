@@ -2,6 +2,8 @@
 
 Portal berita dengan desain internasional (inspirasi BBC, Reuters, CNN) untuk kabupaten Banyuwangi dan sekitarnya.
 
+🌐 **Domain**: [banyuwangi-asyik.com](https://banyuwangi-asyik.com)
+
 ## Fitur
 
 - Desain editorial profesional dengan tipografi serif + sans-serif
@@ -11,6 +13,9 @@ Portal berita dengan desain internasional (inspirasi BBC, Reuters, CNN) untuk ka
 - Sidebar terpopuler & newsletter
 - Halaman artikel lengkap dengan berita terkait
 - Pencarian berita real-time
+- SEO optimized (meta tags, Open Graph, Twitter Card, sitemap, robots.txt)
+- Aksesibilitas (focus styles, ARIA, prefers-reduced-motion)
+- Halaman 404 custom
 - Responsif (mobile, tablet, desktop)
 
 ## Struktur
@@ -18,10 +23,13 @@ Portal berita dengan desain internasional (inspirasi BBC, Reuters, CNN) untuk ka
 ```
 ├── index.html          # Halaman beranda
 ├── article.html        # Template halaman artikel
+├── 404.html            # Halaman error 404
 ├── css/style.css       # Stylesheet utama
 ├── js/
 │   ├── articles.js     # Data & helper artikel
 │   └── main.js         # Logika UI
+├── robots.txt          # Konfigurasi crawler
+├── sitemap.xml         # Sitemap untuk SEO
 └── README.md
 ```
 
@@ -42,9 +50,9 @@ npx serve .
 
 ## Custom Domain
 
-Untuk domain `banyuwangi-asyikberita.online`:
+Untuk domain `banyuwangi-asyik.com`:
 
-1. Tambahkan file `CNAME` berisi: `banyuwangi-asyikberita.online`
+1. Tambahkan file `CNAME` berisi: `banyuwangi-asyik.com`
 2. Atur DNS di registrar domain:
    - `A` record → `76.76.21.21`
    - `CNAME` `www` → `daunggamer-sketch.github.io`
