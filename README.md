@@ -46,7 +46,7 @@ npx serve .
 1. Push semua file ke repository
 2. Buka **Settings → Pages**
 3. Source: **Deploy from branch** → `main` → `/ (root)`
-4. Simpan — situs live di `https://daunggamer-sketch.github.io/banyuwangi-asyikberita.online/`
+4. Simpan — situs live di `https://daunggamer-sketch.github.io/banyuwangi-asyik/`
 
 ## Custom Domain
 
