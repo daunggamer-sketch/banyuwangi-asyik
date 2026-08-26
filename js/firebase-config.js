@@ -13,9 +13,29 @@ const firebaseConfig = {
   measurementId: "G-7NHSP8ZL3F"
 };
 
-// Inisialisasi Firebase
-firebase.initializeApp(firebaseConfig);
+// Inisialisasi Firebase dengan error handling
+let db, auth, storage;
 
-const db = firebase.firestore();
-const auth = firebase.auth();
-const storage = firebase.storage();
+try {
+  if (!firebase.apps.length) {
+    console.log("Menginisialisasi Firebase...");
+    firebase.initializeApp(firebaseConfig);
+    console.log("Firebase berhasil diinisialisasi");
+  } else {
+    console.log("Firebase sudah terinisialisasi");
+  }
+  
+  db = firebase.firestore();
+  auth = firebase.auth();
+  storage = firebase.storage();
+  
+  console.log("Firebase services siap");
+} catch (error) {
+  console.error("Gagal menginisialisasi Firebase:", error);
+  console.log("Sistem akan menggunakan mode offline (localStorage)");
+  
+  // Dummy objects untuk mencegah error jika Firebase gagal
+  db = null;
+  auth = null;
+  storage = null;
+}

@@ -9,11 +9,28 @@
  * Registrasi user baru
  */
 async function registerUser({ name, username, email, password }) {
+  console.log("Memulai registrasi untuk:", email);
+  
+  // Cek apakah Firebase tersedia
+  if (!auth || !db) {
+    console.log("Firebase tidak tersedia, menggunakan mode offline");
+    return registerUserLocal({ name, username, email, password });
+  }
+  
   try {
+    // Cek apakah Firebase sudah terinisialisasi
+    if (!firebase.apps.length) {
+      console.log("Firebase belum terinisialisasi, mencoba inisialisasi...");
+      firebase.initializeApp(firebaseConfig);
+    }
+
+    console.log("Membuat akun Firebase Auth...");
     // Buat akun di Firebase Auth
     const userCredential = await auth.createUserWithEmailAndPassword(email, password);
     const user = userCredential.user;
+    console.log("Firebase Auth berhasil:", user.uid);
 
+    console.log("Menyimpan profil ke Firestore...");
     // Simpan profil ke Firestore
     await db.collection("users").doc(user.uid).set({
       name,
@@ -22,9 +39,14 @@ async function registerUser({ name, username, email, password }) {
       role: "wartawan",
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     });
+    console.log("Firestore berhasil");
 
     return { success: true, message: "Registrasi berhasil! Silakan login." };
   } catch (error) {
+    console.error("Error registrasi:", error);
+    console.error("Error code:", error.code);
+    console.error("Error message:", error.message);
+    
     let message = error.message;
     if (error.code === "auth/email-already-in-use") {
       message = "Email sudah terdaftar.";
@@ -32,8 +54,57 @@ async function registerUser({ name, username, email, password }) {
       message = "Format email tidak valid.";
     } else if (error.code === "auth/weak-password") {
       message = "Password terlalu lemah, minimal 6 karakter.";
+    } else if (error.code === "auth/network-request-failed") {
+      message = "Koneksi internet bermasalah. Periksa koneksi Anda.";
+    } else if (error.code === "auth/too-many-requests") {
+      message = "Terlalu banyak percobaan. Coba lagi dalam beberapa menit.";
+    } else if (error.code === "auth/internal-error") {
+      message = "Terjadi kesalahan internal Firebase. Coba gunakan mode offline.";
+    } else if (error.code === "auth/operation-not-allowed") {
+      message = "Registrasi email dinonaktifkan. Hubungi admin.";
     }
-    return { success: false, message };
+    
+    // Fallback ke localStorage jika Firebase gagal
+    console.log("Mencoba fallback ke localStorage...");
+    return registerUserLocal({ name, username, email, password });
+  }
+}
+
+/**
+ * Registrasi user dengan localStorage (fallback)
+ */
+function registerUserLocal({ name, username, email, password }) {
+  console.log("Registrasi localStorage untuk:", email);
+  
+  try {
+    const users = getUsers();
+    const existingUser = users.find(u => u.email === email || u.username === username);
+    
+    if (existingUser) {
+      if (existingUser.email === email) {
+        return { success: false, message: "Email sudah terdaftar (mode offline)." };
+      } else {
+        return { success: false, message: "Username sudah digunakan (mode offline)." };
+      }
+    }
+    
+    const newUser = {
+      id: Date.now().toString(),
+      name,
+      username,
+      email,
+      password, // Catatan: Ini tidak aman untuk production
+      role: "wartawan",
+      createdAt: new Date().toISOString()
+    };
+    
+    users.push(newUser);
+    saveUsers(users);
+    console.log("Registrasi localStorage berhasil");
+    return { success: true, message: "Registrasi berhasil (mode offline)! Silakan login." };
+  } catch (error) {
+    console.error("Error localStorage registrasi:", error);
+    return { success: false, message: "Gagal registrasi di localStorage." };
   }
 }
 
@@ -41,11 +112,26 @@ async function registerUser({ name, username, email, password }) {
  * Login user
  */
 async function loginUser(identifier, password) {
+  console.log("Memulai login untuk:", identifier);
+  
+  // Cek apakah Firebase tersedia
+  if (!auth || !db) {
+    console.log("Firebase tidak tersedia, menggunakan mode offline");
+    return loginUserLocal(identifier, password);
+  }
+  
   try {
+    // Cek apakah Firebase sudah terinisialisasi
+    if (!firebase.apps.length) {
+      console.log("Firebase belum terinisialisasi, mencoba inisialisasi...");
+      firebase.initializeApp(firebaseConfig);
+    }
+
     const email = identifier.includes("@") ? identifier : `${identifier}@placeholder.firebase`;
     let userCredential;
 
     if (email.includes("placeholder.firebase")) {
+      console.log("Login dengan username, mencari di Firestore...");
       // Jika login pakai username, cari email-nya dulu di Firestore
       const snapshot = await db.collection("users")
         .where("username", "==", identifier)
@@ -53,17 +139,23 @@ async function loginUser(identifier, password) {
         .get();
 
       if (snapshot.empty) {
-        return { success: false, message: "Username tidak ditemukan." };
+        console.log("Username tidak ditemukan di Firestore");
+        // Coba fallback ke localStorage
+        return loginUserLocal(identifier, password);
       }
 
       const userData = snapshot.docs[0].data();
+      console.log("Username ditemukan, email:", userData.email);
       userCredential = await auth.signInWithEmailAndPassword(userData.email, password);
     } else {
+      console.log("Login dengan email:", email);
       userCredential = await auth.signInWithEmailAndPassword(email, password);
     }
 
     const user = userCredential.user;
+    console.log("Firebase Auth login berhasil:", user.uid);
 
+    console.log("Mengambil profil dari Firestore...");
     // Ambil data profil dari Firestore
     const doc = await db.collection("users").doc(user.uid).get();
     let userData = {
@@ -84,10 +176,15 @@ async function loginUser(identifier, password) {
       };
     }
 
+    console.log("Profil user:", userData);
     // Simpan sesi
     setSession(userData);
     return { success: true, message: "Login berhasil!", user: userData };
   } catch (error) {
+    console.error("Error login:", error);
+    console.error("Error code:", error.code);
+    console.error("Error message:", error.message);
+    
     let message = error.message;
     if (error.code === "auth/user-not-found") {
       message = "Email tidak terdaftar. Silakan daftar dulu.";
@@ -95,8 +192,55 @@ async function loginUser(identifier, password) {
       message = "Password salah.";
     } else if (error.code === "auth/invalid-email") {
       message = "Format email tidak valid.";
+    } else if (error.code === "auth/network-request-failed") {
+      message = "Koneksi internet bermasalah. Periksa koneksi Anda.";
+    } else if (error.code === "auth/too-many-requests") {
+      message = "Terlalu banyak percobaan login. Coba lagi dalam beberapa menit.";
+    } else if (error.code === "auth/internal-error") {
+      message = "Terjadi kesalahan internal Firebase. Coba gunakan mode offline.";
     }
-    return { success: false, message };
+    
+    // Fallback ke localStorage jika Firebase gagal
+    console.log("Mencoba fallback ke localStorage...");
+    return loginUserLocal(identifier, password);
+  }
+}
+
+/**
+ * Login user dengan localStorage (fallback)
+ */
+function loginUserLocal(identifier, password) {
+  console.log("Login localStorage untuk:", identifier);
+  
+  try {
+    const users = getUsers();
+    const user = users.find(u => 
+      (u.email === identifier || u.username === identifier) && u.password === password
+    );
+    
+    if (!user) {
+      const userExists = users.find(u => u.email === identifier || u.username === identifier);
+      if (userExists) {
+        return { success: false, message: "Password salah (mode offline)." };
+      } else {
+        return { success: false, message: "User tidak ditemukan (mode offline). Silakan daftar dulu." };
+      }
+    }
+    
+    const userData = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      username: user.username,
+      role: user.role || "wartawan"
+    };
+    
+    setSession(userData);
+    console.log("Login localStorage berhasil");
+    return { success: true, message: "Login berhasil (mode offline)!", user: userData };
+  } catch (error) {
+    console.error("Error localStorage login:", error);
+    return { success: false, message: "Gagal login di Firebase dan localStorage." };
   }
 }
 
