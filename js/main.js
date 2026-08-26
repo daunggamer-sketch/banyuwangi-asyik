@@ -103,11 +103,35 @@ const App = {
   },
 
   renderAuthNav() {
+    console.log("renderAuthNav called");
     const el = document.getElementById("auth-nav");
-    if (!el) return;
+    console.log("auth-nav element:", el);
+    
+    if (!el) {
+      console.error("auth-nav element not found!");
+      return;
+    }
+
+    // Check if auth functions are available
+    if (typeof isLoggedIn === 'undefined' || typeof getCurrentUser === 'undefined') {
+      console.error("Auth functions not available! Using fallback rendering.");
+      el.innerHTML = `
+        <a href="login.html" class="auth-nav__link">Masuk</a>
+        <a href="signup.html" class="auth-nav__link auth-nav__link--cta">Daftar</a>`;
+      
+      // Render mobile auth nav fallback
+      const mobileEl = document.getElementById("mobile-nav-auth");
+      if (mobileEl) {
+        mobileEl.innerHTML = `
+          <a href="login.html" class="mobile-nav__auth-link">Masuk</a>
+          <a href="signup.html" class="mobile-nav__auth-link mobile-nav__auth-link--cta">Daftar</a>`;
+      }
+      return;
+    }
 
     if (isLoggedIn()) {
       const user = getCurrentUser();
+      console.log("User logged in:", user);
       el.innerHTML = `
         <a href="dashboard.html" class="auth-nav__link auth-nav__link--user" title="Dashboard wartawan">👤 ${user.name.split(" ")[0]}</a>
         <a href="#" class="auth-nav__link auth-nav__link--logout" id="auth-logout">Keluar</a>`;
@@ -118,6 +142,7 @@ const App = {
         window.location.reload();
       });
     } else {
+      console.log("User not logged in");
       el.innerHTML = `
         <a href="login.html" class="auth-nav__link">Masuk</a>
         <a href="signup.html" class="auth-nav__link auth-nav__link--cta">Daftar</a>`;
@@ -125,7 +150,12 @@ const App = {
 
     // Render mobile auth nav
     const mobileEl = document.getElementById("mobile-nav-auth");
-    if (!mobileEl) return;
+    console.log("mobile-nav-auth element:", mobileEl);
+    
+    if (!mobileEl) {
+      console.error("mobile-nav-auth element not found!");
+      return;
+    }
 
     if (isLoggedIn()) {
       const user = getCurrentUser();
