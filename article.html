@@ -35,6 +35,7 @@
       </nav>
       <div class="site-header__actions">
         <time class="header-date" id="header-date"></time>
+        <nav class="auth-nav" id="auth-nav" aria-label="Navigasi akun"></nav>
         <button class="btn-search" id="btn-search" aria-label="Cari berita">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
@@ -54,6 +55,7 @@
     <a href="index.html#ekonomi" class="mobile-nav__link">Ekonomi</a>
     <a href="index.html#olahraga" class="mobile-nav__link">Olahraga</a>
     <a href="index.html#politik" class="mobile-nav__link">Politik</a>
+    <div class="mobile-nav__auth" id="mobile-nav-auth"></div>
   </nav>
 
   <!-- Hero Article Decoration -->
@@ -143,6 +145,8 @@
     </div>
   </div>
 
+  <script src="js/firebase-config.js"></script>
+  <script src="js/auth.js"></script>
   <script src="js/articles.js"></script>
   <script src="js/main.js"></script>
   <script>

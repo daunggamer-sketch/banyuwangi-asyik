@@ -122,6 +122,27 @@ const App = {
         <a href="login.html" class="auth-nav__link">Masuk</a>
         <a href="signup.html" class="auth-nav__link auth-nav__link--cta">Daftar</a>`;
     }
+
+    // Render mobile auth nav
+    const mobileEl = document.getElementById("mobile-nav-auth");
+    if (!mobileEl) return;
+
+    if (isLoggedIn()) {
+      const user = getCurrentUser();
+      mobileEl.innerHTML = `
+        <a href="dashboard.html" class="mobile-nav__auth-link">👤 ${user.name.split(" ")[0]}</a>
+        <a href="#" class="mobile-nav__auth-link" id="mobile-auth-logout">Keluar</a>`;
+      const mobileLogoutBtn = document.getElementById("mobile-auth-logout");
+      mobileLogoutBtn?.addEventListener("click", (e) => {
+        e.preventDefault();
+        logoutUser();
+        window.location.reload();
+      });
+    } else {
+      mobileEl.innerHTML = `
+        <a href="login.html" class="mobile-nav__auth-link">Masuk</a>
+        <a href="signup.html" class="mobile-nav__auth-link mobile-nav__auth-link--cta">Daftar</a>`;
+    }
   },
 
   renderHero() {
