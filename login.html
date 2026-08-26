@@ -223,11 +223,35 @@
     </div>
   </main>
 
+  <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script>
+    // Local showAuthMessage function if not available from auth.js
+    function showAuthMessage(el, message, type = "error") {
+      if (!el) return;
+      el.textContent = message;
+      el.className = `auth-message auth-message--${type}`;
+      console.log(`Auth message (${type}):`, message);
+      setTimeout(() => {
+        el.textContent = "";
+        el.className = "auth-message";
+      }, 8000);
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
+      console.log("Login page loaded");
+      
+      // Check if auth functions are available
+      if (typeof isLoggedIn === 'undefined' || typeof loginUser === 'undefined') {
+        console.error("Auth functions not available!");
+        showAuthMessage(document.getElementById("login-message"), 
+          "Sistem auth tidak tersedia. Refresh halaman atau hubungi admin.", "error");
+        return;
+      }
+
       // Jika sudah login, langsung ke dashboard
       if (isLoggedIn()) {
+        console.log("User already logged in, redirecting to dashboard");
         window.location.href = "dashboard.html";
         return;
       }
@@ -235,12 +259,22 @@
       const form = document.getElementById("login-form");
       const messageEl = document.getElementById("login-message");
 
+      if (!form) {
+        console.error("Login form not found!");
+        return;
+      }
+
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        console.log("Form submitted");
+
         const identifier = document.getElementById("login-identifier").value.trim();
         const password = document.getElementById("login-password").value;
 
+        console.log("Login attempt for:", identifier);
+
         const result = await loginUser(identifier, password);
+        console.log("Login result:", result);
 
         if (result.success) {
           showAuthMessage(messageEl, "Login berhasil! Mengalihkan...", "success");

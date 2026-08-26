@@ -228,11 +228,35 @@
     </div>
   </main>
 
+  <script src="js/firebase-config.js"></script>
   <script src="js/auth.js"></script>
   <script>
+    // Local showAuthMessage function if not available from auth.js
+    function showAuthMessage(el, message, type = "error") {
+      if (!el) return;
+      el.textContent = message;
+      el.className = `auth-message auth-message--${type}`;
+      console.log(`Auth message (${type}):`, message);
+      setTimeout(() => {
+        el.textContent = "";
+        el.className = "auth-message";
+      }, 8000);
+    }
+
     document.addEventListener("DOMContentLoaded", () => {
+      console.log("Signup page loaded");
+      
+      // Check if auth functions are available
+      if (typeof isLoggedIn === 'undefined' || typeof registerUser === 'undefined') {
+        console.error("Auth functions not available!");
+        showAuthMessage(document.getElementById("signup-message"), 
+          "Sistem auth tidak tersedia. Refresh halaman atau hubungi admin.", "error");
+        return;
+      }
+
       // Jika sudah login, langsung ke dashboard
       if (isLoggedIn()) {
+        console.log("User already logged in, redirecting to dashboard");
         window.location.href = "dashboard.html";
         return;
       }
@@ -240,14 +264,22 @@
       const form = document.getElementById("signup-form");
       const messageEl = document.getElementById("signup-message");
 
+      if (!form) {
+        console.error("Signup form not found!");
+        return;
+      }
+
       form.addEventListener("submit", async (e) => {
         e.preventDefault();
+        console.log("Form submitted");
 
         const name = document.getElementById("signup-name").value.trim();
         const username = document.getElementById("signup-username").value.trim();
         const email = document.getElementById("signup-email").value.trim();
         const password = document.getElementById("signup-password").value;
         const confirm = document.getElementById("signup-confirm").value;
+
+        console.log("Form data:", { name, username, email });
 
         // Validasi
         if (name.length < 3) {
@@ -275,7 +307,9 @@
           return;
         }
 
+        console.log("Validation passed, calling registerUser...");
         const result = await registerUser({ name, username, email, password });
+        console.log("Register result:", result);
 
         if (result.success) {
           showAuthMessage(messageEl, result.message, "success");
