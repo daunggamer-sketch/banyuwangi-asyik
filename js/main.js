@@ -113,39 +113,28 @@ const App = {
     }
 
     // Check if auth functions are available
-    if (typeof isLoggedIn === 'undefined' || typeof getCurrentUser === 'undefined') {
-      console.error("Auth functions not available! Using fallback rendering.");
-      el.innerHTML = `
-        <a href="login.html" class="auth-nav__link">Masuk</a>
-        <a href="signup.html" class="auth-nav__link auth-nav__link--cta">Daftar</a>`;
-      
-      // Render mobile auth nav fallback
-      const mobileEl = document.getElementById("mobile-nav-auth");
-      if (mobileEl) {
-        mobileEl.innerHTML = `
-          <a href="login.html" class="mobile-nav__auth-link">Masuk</a>
-          <a href="signup.html" class="mobile-nav__auth-link mobile-nav__auth-link--cta">Daftar</a>`;
+    if (typeof isLoggedIn !== 'undefined' && typeof getCurrentUser !== 'undefined' && typeof logoutUser !== 'undefined') {
+      if (isLoggedIn()) {
+        const user = getCurrentUser();
+        console.log("User logged in:", user);
+        el.innerHTML = `
+          <a href="dashboard.html" class="auth-nav__link auth-nav__link--user" title="Dashboard wartawan">👤 ${user.name.split(" ")[0]}</a>
+          <a href="#" class="auth-nav__link auth-nav__link--logout" id="auth-logout">Keluar</a>`;
+        const logoutBtn = document.getElementById("auth-logout");
+        logoutBtn?.addEventListener("click", (e) => {
+          e.preventDefault();
+          logoutUser();
+          window.location.reload();
+        });
+      } else {
+        console.log("User not logged in");
+        el.innerHTML = `
+          <a href="login.html" class="auth-nav__link">Masuk</a>
+          <a href="signup.html" class="auth-nav__link auth-nav__link--cta">Daftar</a>`;
       }
-      return;
-    }
-
-    if (isLoggedIn()) {
-      const user = getCurrentUser();
-      console.log("User logged in:", user);
-      el.innerHTML = `
-        <a href="dashboard.html" class="auth-nav__link auth-nav__link--user" title="Dashboard wartawan">👤 ${user.name.split(" ")[0]}</a>
-        <a href="#" class="auth-nav__link auth-nav__link--logout" id="auth-logout">Keluar</a>`;
-      const logoutBtn = document.getElementById("auth-logout");
-      logoutBtn?.addEventListener("click", (e) => {
-        e.preventDefault();
-        logoutUser();
-        window.location.reload();
-      });
     } else {
-      console.log("User not logged in");
-      el.innerHTML = `
-        <a href="login.html" class="auth-nav__link">Masuk</a>
-        <a href="signup.html" class="auth-nav__link auth-nav__link--cta">Daftar</a>`;
+      console.log("Auth functions not available, showing default buttons");
+      // Keep the default HTML buttons
     }
 
     // Render mobile auth nav
@@ -157,18 +146,25 @@ const App = {
       return;
     }
 
-    if (isLoggedIn()) {
-      const user = getCurrentUser();
-      mobileEl.innerHTML = `
-        <a href="dashboard.html" class="mobile-nav__auth-link">👤 ${user.name.split(" ")[0]}</a>
-        <a href="#" class="mobile-nav__auth-link" id="mobile-auth-logout">Keluar</a>`;
-      const mobileLogoutBtn = document.getElementById("mobile-auth-logout");
-      mobileLogoutBtn?.addEventListener("click", (e) => {
-        e.preventDefault();
-        logoutUser();
-        window.location.reload();
-      });
+    if (typeof isLoggedIn !== 'undefined' && typeof getCurrentUser !== 'undefined' && typeof logoutUser !== 'undefined') {
+      if (isLoggedIn()) {
+        const user = getCurrentUser();
+        mobileEl.innerHTML = `
+          <a href="dashboard.html" class="mobile-nav__auth-link">👤 ${user.name.split(" ")[0]}</a>
+          <a href="#" class="mobile-nav__auth-link" id="mobile-auth-logout">Keluar</a>`;
+        const mobileLogoutBtn = document.getElementById("mobile-auth-logout");
+        mobileLogoutBtn?.addEventListener("click", (e) => {
+          e.preventDefault();
+          logoutUser();
+          window.location.reload();
+        });
+      } else {
+        mobileEl.innerHTML = `
+          <a href="login.html" class="mobile-nav__auth-link">Masuk</a>
+          <a href="signup.html" class="mobile-nav__auth-link mobile-nav__auth-link--cta">Daftar</a>`;
+      }
     } else {
+      console.log("Auth functions not available, showing default mobile buttons");
       mobileEl.innerHTML = `
         <a href="login.html" class="mobile-nav__auth-link">Masuk</a>
         <a href="signup.html" class="mobile-nav__auth-link mobile-nav__auth-link--cta">Daftar</a>`;
