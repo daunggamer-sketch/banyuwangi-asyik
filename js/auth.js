@@ -144,9 +144,13 @@ function createUploadedArticle(articleData) {
  */
 function deleteUploadedArticle(id) {
   try {
+    console.log("Deleting article from localStorage, ID:", id);
     const articles = getUploadedArticles();
-    const filtered = articles.filter(a => a.id !== id);
+    console.log("Current articles:", articles);
+    const filtered = articles.filter(a => String(a.id) !== String(id));
+    console.log("After filtering:", filtered);
     localStorage.setItem(AUTH_KEYS.UPLOADED_ARTICLES, JSON.stringify(filtered));
+    console.log("Article deleted successfully");
     return true;
   } catch (error) {
     console.error("Gagal menghapus artikel:", error);
@@ -221,24 +225,25 @@ function calculateReadTime(html) {
 }
 
 /**
- * Gabungkan artikel statis + artikel dari Firebase
- * (async — harus dipanggil dengan await)
+ * Gabungkan artikel statis + artikel dari localStorage
  */
-async function getAllArticles() {
-  let uploaded = [];
-  try {
-    uploaded = await getUploadedArticlesFromFirebase();
-  } catch {
-    uploaded = getUploadedArticlesLocal();
-  }
+function getAllArticles() {
+  const uploaded = getUploadedArticles();
   const mapped = uploaded.map(a => ({
     ...a,
     id: a.id,
     fromNewsroom: true,
-    date: a.date || new Date().toISOString()
+    date: a.date || new Date().toISOString(),
+    slug: a.slug || generateSlug(a.title),
+    readTime: a.readTime || calculateReadTime(a.content),
+    featured: false,
+    breaking: false
   }));
   return [...mapped, ...ARTICLES];
 }
+
+// Make getAllArticles available globally for articles.js
+window.getAllArticles = getAllArticles;
 
 function showAuthMessage(el, message, type = "error") {
   if (!el) return;

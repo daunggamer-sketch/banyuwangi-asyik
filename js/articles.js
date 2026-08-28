@@ -182,7 +182,7 @@ async function loadFirebaseArticles() {
 // ==================== FUNGSI GET ====================
 
 function getAllNews() {
-  return [...firebaseArticlesCache, ...ARTICLES];
+  return getAllArticles(); // Use getAllArticles from auth.js which includes uploaded articles
 }
 
 function getArticleById(id) {
@@ -224,7 +224,7 @@ function getMostRead(limit = 5) {
 }
 
 function getByCategory(category, limit) {
-  const news = getAllNews();
+  const news = getAllArticles(); // Use getAllArticles from auth.js which includes uploaded articles
   const filtered = category === "Semua"
     ? news
     : news.filter(a => a.category === category);

@@ -56,14 +56,24 @@ const Dashboard = {
     const preview = document.getElementById("image-preview");
     const previewImg = document.getElementById("image-preview-img");
 
-    imageInput.addEventListener("input", () => {
-      const url = imageInput.value.trim();
-      if (url) {
-        previewImg.src = url;
-        preview.style.display = "flex";
+    imageInput.addEventListener("change", async (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        try {
+          const base64 = await uploadFile(file);
+          previewImg.src = base64;
+          preview.style.display = "flex";
+          document.getElementById("image-preview-name").textContent = file.name;
+          // Store base64 in data attribute for later use
+          imageInput.dataset.base64 = base64;
+        } catch (error) {
+          console.error("Error processing image:", error);
+          this.showMessage(document.getElementById("article-message"), "Gagal memproses gambar. Silakan coba lagi.", "error");
+        }
       } else {
         preview.style.display = "none";
         previewImg.src = "";
+        delete imageInput.dataset.base64;
       }
     });
 
@@ -84,8 +94,16 @@ const Dashboard = {
       const category = document.getElementById("article-category").value;
       const excerpt = document.getElementById("article-excerpt").value.trim();
       const content = document.getElementById("article-content").value.trim();
-      const image = document.getElementById("article-image").value.trim();
+      const imageInput = document.getElementById("article-image");
       const video = document.getElementById("article-video").value.trim();
+
+      // Get image data from file input
+      let image = imageInput.dataset.base64 || "";
+      if (!image && imageInput.files.length > 0) {
+        // Fallback if base64 conversion failed
+        this.showMessage(messageEl, "Gagal memproses gambar. Silakan pilih gambar lagi.", "error");
+        return;
+      }
 
       // Validasi
       if (title.length < 10) {
@@ -107,7 +125,7 @@ const Dashboard = {
         .map(p => `<p>${p.trim()}</p>`)
         .join("\n");
 
-      createUploadedArticle({
+      const articleData = {
         title,
         category,
         excerpt,
@@ -116,17 +134,27 @@ const Dashboard = {
         imageAlt: title,
         video,
         authorName: this.currentUser.name,
-        authorUsername: this.currentUser.username
-      });
+        authorUsername: this.currentUser.username,
+        slug: generateSlug(title),
+        readTime: calculateReadTime(contentHtml),
+        status: "Published"
+      };
 
-      this.showMessage(messageEl, "Berita berhasil dipublikasikan! 🎉", "success");
-      this.showToast("Berita berhasil dipublikasikan!");
+      try {
+        createUploadedArticle(articleData);
+        this.showMessage(messageEl, "Berita berhasil dipublikasikan! 🎉", "success");
+        this.showToast("Berita berhasil dipublikasikan!");
 
-      form.reset();
-      document.getElementById("image-preview").style.display = "none";
+        form.reset();
+        document.getElementById("image-preview").style.display = "none";
+        delete imageInput.dataset.base64;
 
-      // Refresh daftar artikel
-      this.renderMyArticles();
+        // Refresh daftar artikel
+        this.renderMyArticles();
+      } catch (error) {
+        console.error("Error publishing article:", error);
+        this.showMessage(messageEl, "Gagal mempublikasikan berita. Silakan coba lagi.", "error");
+      }
     });
   },
 
@@ -153,14 +181,14 @@ const Dashboard = {
             <span>📂 ${a.category}</span>
             <span>📅 ${formatShortDate(a.date)}</span>
             <span>⏱ ${a.readTime} menit</span>
-            <span class="article-item__badge">${a.status}</span>
+            <span class="article-item__badge">${a.status || 'Published'}</span>
             ${a.video ? '<span>🎥 Video</span>' : ""}
             ${a.image ? '<span>🖼 Foto</span>' : ""}
           </div>
         </div>
         <div class="article-item__actions">
           <a href="article.html?slug=${a.slug}" class="dash-btn" target="_blank">Lihat</a>
-          <button class="dash-btn dash-btn--danger" onclick="Dashboard.deleteArticle(${a.id})">Hapus</button>
+          <button class="dash-btn dash-btn--danger" onclick="Dashboard.deleteArticle('${a.id}')">Hapus</button>
         </div>
       </div>
     `).join("");
@@ -168,6 +196,7 @@ const Dashboard = {
 
   deleteArticle(id) {
     if (confirm("Apakah Anda yakin ingin menghapus berita ini?")) {
+      console.log("Deleting article with ID:", id);
       deleteUploadedArticle(id);
       this.showToast("Berita berhasil dihapus.");
       this.renderMyArticles();
