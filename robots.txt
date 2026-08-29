@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://daunggamer-sketch.github.io/banyuwangi-asyik/sitemap.xml
+Sitemap: https://banyuwangi-asyik.com/sitemap.xml
