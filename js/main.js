@@ -37,16 +37,20 @@ const App = {
     }
 
     // Update meta tags untuk SEO & social sharing
+    const isLocalPreview = ["localhost", "127.0.0.1"].includes(location.hostname);
+    const canonicalBase = isLocalPreview ? window.location.origin : "https://banyuwangi-asyik.com";
+    const canonicalUrl = canonicalBase + location.pathname + location.search + location.hash;
+
     document.title = `${article.title} — Banyuwangi Asyik Berita`;
     document.querySelector('meta[name="description"]').setAttribute("content", article.excerpt);
     document.querySelector('meta[property="og:title"]').setAttribute("content", article.title);
     document.querySelector('meta[property="og:description"]').setAttribute("content", article.excerpt);
     document.querySelector('meta[property="og:image"]').setAttribute("content", article.image);
-    document.querySelector('meta[property="og:url"]').setAttribute("content", window.location.href);
+    document.querySelector('meta[property="og:url"]').setAttribute("content", canonicalUrl);
     document.querySelector('meta[name="twitter:title"]').setAttribute("content", article.title);
     document.querySelector('meta[name="twitter:description"]').setAttribute("content", article.excerpt);
     document.querySelector('meta[name="twitter:image"]').setAttribute("content", article.image);
-    document.querySelector('link[rel="canonical"]').setAttribute("href", window.location.href);
+    document.querySelector('link[rel="canonical"]').setAttribute("href", canonicalUrl);
 
     document.getElementById("article-content").innerHTML = `
       <header class="article-header">
