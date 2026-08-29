@@ -1,21 +1,20 @@
 ﻿<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 700'>
   <defs>
     <linearGradient id='g' x1='0' x2='1' y1='0' y2='1'>
-      <stop offset='0%' stop-color='#E8F4EC'/>
-      <stop offset='100%' stop-color='#0F766E'/>
+      <stop offset='0%' stop-color='#e9f7f0'/>
+      <stop offset='100%' stop-color='#0b7f74'/>
     </linearGradient>
   </defs>
   <rect width='1200' height='700' fill='url(#g)'/>
-  <circle cx='990' cy='140' r='120' fill='rgba(255,255,255,.18)'/>
-  <rect x='80' y='80' width='1040' height='540' rx='32' fill='rgba(255,255,255,.12)'/>
-  <rect x='160' y='150' width='240' height='220' rx='18' fill='rgba(255,255,255,.12)' stroke='rgba(255,255,255,.35)'/>
-  <rect x='220' y='220' width='120' height='110' rx='18' fill='rgba(255,255,255,.2)'/>
-  <path d='M200 420 C300 320, 430 320, 520 420 L520 520 L200 520 Z' fill='rgba(255,255,255,.18)'/>
-  <path d='M650 450 Q780 280 930 450 L930 520 L650 520 Z' fill='rgba(0,0,0,.12)'/>
-  <circle cx='760' cy='250' r='70' fill='rgba(255,255,255,.22)'/>
-  <rect x='640' y='170' width='240' height='180' rx='16' fill='rgba(255,255,255,.18)'/>
-  <text x='165' y='220' font-size='30' font-weight='700' fill='white' font-family='Segoe UI, Arial, sans-serif'>BANYUWANGI</text>
-  <text x='165' y='285' font-size='58' font-weight='700' fill='white' font-family='Segoe UI, Arial, sans-serif'>Sekolah</text>
-  <text x='165' y='340' font-size='26' fill='white' font-family='Segoe UI, Arial, sans-serif'>Digital</text>
-  <text x='165' y='585' font-size='22' fill='rgba(255,255,255,.94)' font-family='Segoe UI, Arial, sans-serif'>1.000 Tablet</text>
+  <circle cx='1030' cy='150' r='150' fill='rgba(255,255,255,.14)'/>
+  <path d='M0 560 C200 500 350 530 520 575 C660 610 860 630 1200 500 L1200 700 L0 700 Z' fill='rgba(0,0,0,.12)'/>
+  <rect x='110' y='95' width='420' height='150' rx='18' fill='rgba(255,255,255,.16)'/>
+  <text x='150' y='165' font-size='24' font-weight='700' fill='white' font-family='Segoe UI, Arial, sans-serif'>BANYUWANGI</text>
+  <text x='150' y='290' font-size='52' font-weight='800' fill='white' font-family='Segoe UI, Arial, sans-serif'>Sekolah</text>
+  <text x='150' y='350' font-size='32' font-weight='700' fill='white' font-family='Segoe UI, Arial, sans-serif'>Digital</text>
+  <text x='150' y='610' font-size='22' fill='rgba(255,255,255,.96)' font-family='Segoe UI, Arial, sans-serif'>1.000 Tablet • Belajar Lebih Cepat</text>
+  <rect x='760' y='220' width='260' height='200' rx='18' fill='rgba(255,255,255,.15)' stroke='rgba(255,255,255,.35)'/>
+  <rect x='790' y='290' width='200' height='80' rx='12' fill='rgba(255,255,255,.18)'/>
+  <rect x='820' y='315' width='140' height='18' rx='9' fill='rgba(255,255,255,.3)'/>
+  <rect x='820' y='346' width='105' height='12' rx='6' fill='rgba(255,255,255,.2)'/>
 </svg>

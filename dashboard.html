@@ -9,8 +9,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css?v=20260829-2">
+  <link rel="icon" href="assets/logo-banyuwangi-asyik.svg" type="image/svg+xml">
 
 
   <style>
@@ -371,7 +371,7 @@
 
   <header class="dash-header">
     <a href="index.html">
-      <img src="assets/logo.png" alt="Banyuwangi Asyik Berita" class="dash-header__logo">
+      <img src="assets/logo-banyuwangi-asyik.svg" alt="Banyuwangi Asyik Berita" class="dash-header__logo">
     </a>
     <div class="dash-header__actions">
       <span class="dash-header__user" id="dash-username"></span>
@@ -459,6 +459,18 @@
 
   <div class="toast" id="dash-toast" role="status"></div>
 
+  <script>
+    (function() {
+      const redirectHosts = ["banyuwangi-asyik.com", "www.banyuwangi-asyik.com"];
+      const currentHost = location.hostname.toLowerCase();
+      const seoPaths = [/^\/robots\.txt$/i, /^\/sitemap\.xml$/i];
+      if (seoPaths.some(re => re.test(location.pathname))) return;
+      if (redirectHosts.includes(currentHost)) {
+        const target = "https://daunggamer-sketch.github.io/banyuwangi-asyik" + location.pathname + location.search + location.hash;
+        if (location.href !== target) location.replace(target);
+      }
+    })();
+  </script>
   <script src="js/auth.js"></script>
   <script src="js/articles.js"></script>
   <script src="js/dashboard.js"></script>

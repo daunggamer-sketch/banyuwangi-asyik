@@ -176,147 +176,163 @@ const App = {
     const el = document.getElementById("hero-section");
     if (!el || !article) return;
 
+    const dateText = new Date(article.date).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+
     el.innerHTML = `
-      <a href="${this.articleUrl(article)}" class="hero__link">
-        <img class="hero__image" src="${article.image}" alt="${article.imageAlt}" fetchpriority="high">
-        <div class="hero__overlay"></div>
-        <div class="hero__content">
-          <span class="hero__category">${article.category}</span>
-          <h1 class="hero__title">${article.title}</h1>
-          <p class="hero__excerpt">${article.excerpt}</p>
-          <div class="hero__meta">
-            <span>${article.author}</span>
-            <span>${getRelativeTime(article.date)}</span>
-            <span>${article.readTime} menit baca</span>
+      <div class="hero-shell">
+        <div class="hero-shell__image">
+          <img src="assets/hero-banyuwangi-reference.png" alt="Pemandangan alam Banyuwangi" fetchpriority="high">
+        </div>
+        <div class="hero-shell__panel">
+          <div class="hero-brand">
+            <div class="hero-brand__mark" aria-hidden="true"></div>
+            <div class="hero-brand__text">Banyuwangi<br>Asyik</div>
+          </div>
+          <div class="hero-date">${dateText}</div>
+          <div class="hero-copy">
+            <span class="hero-copy__tag">${article.category}</span>
+            <h1>${article.title}</h1>
+            <p>${article.excerpt}</p>
+            <div class="hero-meta">
+              <span>${article.author}</span>
+              <span>${getRelativeTime(article.date)}</span>
+              <span>${article.readTime} minutes</span>
+            </div>
           </div>
         </div>
-      </a>`;
+      </div>
+    `;
   },
 
   renderCategoryTabs() {
     const el = document.getElementById("category-tabs");
     if (!el) return;
-
-    el.innerHTML = CATEGORIES.map((cat, i) => `
-      <button class="category-tabs__btn${i === 0 ? " active" : ""}" data-category="${cat}" role="tab" aria-selected="${i === 0 ? "true" : "false"}">${cat}</button>
-    `).join("");
-
-    el.addEventListener("click", (e) => {
-      const btn = e.target.closest(".category-tabs__btn");
-      if (!btn) return;
-      el.querySelectorAll(".category-tabs__btn").forEach(b => {
-        b.classList.remove("active");
-        b.setAttribute("aria-selected", "false");
-      });
-      btn.classList.add("active");
-      btn.setAttribute("aria-selected", "true");
-      this.renderNewsGrid(btn.dataset.category);
-    });
+    el.innerHTML = "";
   },
 
   renderNewsGrid(category) {
     const el = document.getElementById("news-grid");
     if (!el) return;
 
-    const articles = getByCategory(category).filter(a => !a.featured).slice(0, 4);
-    el.innerHTML = articles.map(a => `
-      <a href="${this.articleUrl(a)}" class="news-card news-card--featured">
-        <div class="news-card__image-wrap">
-          <img class="news-card__image" src="${a.image}" alt="${a.imageAlt}" loading="lazy">
-        </div>
-        <div class="news-card__body">
-          <div class="news-card__category">${a.category}</div>
-          <h3 class="news-card__title">${a.title}</h3>
-          <p class="news-card__excerpt">${a.excerpt}</p>
-          <div class="news-card__meta">${getRelativeTime(a.date)} &middot; ${a.readTime} menit</div>
-        </div>
-      </a>
-    `).join("");
+    const articles = getAllArticles().slice(0, 3);
+    const positions = ["center center", "center 35%", "center 20%"];
+    el.innerHTML = `
+      <div class="top-stories-header">
+        <h2>TOP STORIES</h2>
+      </div>
+      <div class="top-stories-grid">
+        ${articles.map((a, index) => `
+          <a href="${this.articleUrl(a)}" class="top-story-card ${index === 0 ? "top-story-card--featured" : ""}">
+            <div class="top-story-card__thumb">
+              <img src="${a.image}" alt="${a.imageAlt}" loading="lazy" style="object-position: ${positions[index] || "center center"};">
+            </div>
+            <div class="top-story-card__content">
+              <div class="top-story-card__label">${a.category}</div>
+              <h3>${a.title}</h3>
+              <p>${a.excerpt}</p>
+            </div>
+          </a>
+        `).join("")}
+      </div>
+    `;
   },
 
   renderStoriesRow() {
     const el = document.getElementById("stories-row");
     if (!el) return;
 
-    // Pilih artikel editor's choice: 1 artikel featured + 2 lainnya
-    const featured = getFeaturedArticle();
-    const others = getAllNews().filter(a => a.id !== featured.id).slice(0, 2);
-    const editorPicks = featured ? [featured, ...others] : getAllNews().slice(0, 3);
+    const events = [
+      "Banyuwangi Cultural Festival",
+      "Beach Cleanup Day",
+      "Traditional Dance Performance"
+    ];
+    const image = getAllArticles()[0]?.image || "assets/article-1.svg";
 
-    el.innerHTML = editorPicks.map(a => `
-      <a href="${this.articleUrl(a)}" class="story-card">
-        <img class="story-card__image" src="${a.image}" alt="${a.imageAlt}" loading="lazy">
-        <div class="story-card__content">
-          <div class="story-card__category">${a.category}</div>
-          <h3 class="story-card__title">${a.title}</h3>
+    el.innerHTML = `
+      <section class="local-events">
+        <div class="local-events__title-wrap">
+          <h2>LOCAL EVENTS</h2>
         </div>
-      </a>
-    `).join("");
+        <div class="local-events__body">
+          <ul class="local-events__list">
+            ${events.map(item => `<li>• ${item}</li>`).join("")}
+          </ul>
+          <div class="local-events__image">
+            <img src="${image}" alt="Acara lokal Banyuwangi" loading="lazy">
+          </div>
+        </div>
+        <div class="timeline-header">BANYUWANGI TIMELINE</div>
+        <div class="timeline-grid">
+          <div class="timeline-item"><span>ORIGINS</span><small>Early settlements</small></div>
+          <div class="timeline-item"><span>GROWTH</span><small>Agricultural development</small></div>
+          <div class="timeline-item"><span>MODERNIZATION</span><small>Infrastructure expansion</small></div>
+          <div class="timeline-item"><span>CULTURE</span><small>Revival of traditions</small></div>
+        </div>
+      </section>
+    `;
   },
 
   renderCategorySections() {
     const el = document.getElementById("category-sections");
     if (!el) return;
 
-    const sections = ["Daerah", "Ekonomi", "Olahraga", "Politik", "Lingkungan"];
-    el.innerHTML = sections.map(cat => {
-      const articles = getByCategory(cat, 3);
-      if (!articles.length) return "";
-      const slug = cat.toLowerCase();
-      return `
-        <section id="${slug}" style="margin-bottom:2.5rem;">
-          <div class="section-header">
-            <h2 class="section-header__title">${cat}</h2>
-            <a href="#" class="section-header__link" data-category="${cat}">Lihat Semua &rarr;</a>
-          </div>
-          <div class="news-grid" style="grid-template-columns:1fr;">
-            ${articles.map(a => `
-              <a href="${this.articleUrl(a)}" class="news-card news-card--horizontal">
-                <div class="news-card__image-wrap">
-                  <img class="news-card__image" src="${a.image}" alt="${a.imageAlt}" loading="lazy">
-                </div>
-                <div class="news-card__body">
-                  <div class="news-card__category">${a.category}</div>
-                  <h3 class="news-card__title">${a.title}</h3>
-                  <p class="news-card__excerpt">${a.excerpt}</p>
-                  <div class="news-card__meta">${getRelativeTime(a.date)}</div>
-                </div>
-              </a>
-            `).join("")}
-          </div>
-        </section>`;
-    }).join("");
+    const culture = getAllArticles().slice(0, 2);
+    const highlightImage = culture[0]?.image || "assets/article-3.svg";
 
-    el.querySelectorAll(".section-header__link").forEach(link => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        const cat = link.dataset.category;
-        document.querySelectorAll(".category-tabs__btn").forEach(btn => {
-          const isMatch = btn.dataset.category === cat;
-          btn.classList.toggle("active", isMatch);
-          btn.setAttribute("aria-selected", isMatch ? "true" : "false");
-        });
-        this.renderNewsGrid(cat);
-        document.getElementById("category-tabs").scrollIntoView({ behavior: "smooth" });
-      });
-    });
+    el.innerHTML = `
+      <section class="cultural-highlight">
+        <div class="cultural-highlight__title">CULTURAL HIGHLIGHTS</div>
+        <div class="cultural-highlight__content">
+          <div class="cultural-highlight__image">
+            <img src="${highlightImage}" alt="Budaya Banyuwangi" loading="lazy">
+          </div>
+          <ul>
+            <li>Traditional Banyuwangi dance performances</li>
+            <li>Unique culinary festival experiences</li>
+            <li>Annual cultural celebrations</li>
+          </ul>
+        </div>
+      </section>
+
+      <section class="next-steps">
+        <div class="next-steps__card next-steps__card--gold">
+          <span>Subscribe Now</span>
+          <small>Receive daily news</small>
+          <a href="https://www.youtube.com/@bwi_asyik" target="_blank" rel="noopener noreferrer" class="next-steps__link">YouTube</a>
+        </div>
+        <div class="next-steps__card">
+          <span>Connect Online</span>
+          <small>Follow us online</small>
+        </div>
+        <div class="next-steps__card">
+          <span>Get Involved</span>
+          <small>Attend local events</small>
+        </div>
+      </section>
+
+      <section class="contact-us">
+        <h2>Contact Us</h2>
+        <p>Get in touch with us today</p>
+        <div class="contact-us__row">
+          <div>Email</div>
+          <strong>bwiasyik@gmail.com</strong>
+        </div>
+        <div class="contact-us__row">
+          <div>Phone</div>
+          <strong>+6285213037381</strong>
+        </div>
+      </section>
+    `;
   },
 
   renderMostRead() {
     const el = document.getElementById("most-read");
     if (!el) return;
-
-    el.innerHTML = getMostRead(5).map((a, i) => `
-      <li>
-        <a href="${this.articleUrl(a)}" class="most-read-item">
-          <span class="most-read-item__num">${i + 1}</span>
-          <div>
-            <div class="most-read-item__title">${a.title}</div>
-            <div class="most-read-item__time">${getRelativeTime(a.date)}</div>
-          </div>
-        </a>
-      </li>
-    `).join("");
+    el.innerHTML = "";
   },
 
   renderRelatedArticles(current) {

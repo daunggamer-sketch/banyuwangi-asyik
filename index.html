@@ -8,8 +8,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&family=Noto+Serif:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
-  <link rel="icon" href="assets/logo.png" type="image/png">
+  <link rel="stylesheet" href="css/style.css?v=20260829-2">
+  <link rel="icon" href="assets/logo-banyuwangi-asyik.svg" type="image/svg+xml">
 </head>
 <body>
 
@@ -25,7 +25,7 @@
   <header class="site-header">
     <div class="site-header__inner">
       <a href="index.html" class="site-logo">
-        <img src="assets/logo.png" alt="Banyuwangi Asyik Berita Online" class="site-logo__img" width="180" height="52">
+        <img src="assets/logo-banyuwangi-asyik.svg" alt="Banyuwangi Asyik Berita Online" class="site-logo__img" width="280" height="80">
       </a>
 
       <nav class="site-nav" aria-label="Navigasi utama">
@@ -146,7 +146,7 @@
     <div class="container">
       <div class="site-footer__grid">
         <div>
-          <img src="assets/logo.png" alt="Banyuwangi Asyik Berita Online" class="site-footer__logo" width="200" height="80">
+          <img src="assets/logo-banyuwangi-asyik.svg" alt="Banyuwangi Asyik Berita Online" class="site-footer__logo" width="260" height="80">
           <p class="site-footer__desc">
             Portal berita independen yang menghadirkan informasi akurat dan tajam dari Banyuwangi, Jawa Timur, dan Indonesia. Dipercaya ribuan pembaca setiap hari.
           </p>
@@ -206,6 +206,18 @@
   <script src="js/auth.js"></script>
   <script src="js/articles.js"></script>
   <script src="js/main.js"></script>
+  <script>
+    (function() {
+      const redirectHosts = ["banyuwangi-asyik.com", "www.banyuwangi-asyik.com"];
+      const currentHost = location.hostname.toLowerCase();
+      const seoPaths = [/^\/robots\.txt$/i, /^\/sitemap\.xml$/i];
+      if (seoPaths.some(re => re.test(location.pathname))) return;
+      if (redirectHosts.includes(currentHost)) {
+        const target = "https://daunggamer-sketch.github.io/banyuwangi-asyik" + location.pathname + location.search + location.hash;
+        if (location.href !== target) location.replace(target);
+      }
+    })();
+  </script>
   <script>
     document.addEventListener("DOMContentLoaded", () => {
       App.initHomepage();

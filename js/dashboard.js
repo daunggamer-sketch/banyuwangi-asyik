@@ -9,7 +9,7 @@ const Dashboard = {
     // Proteksi: hanya boleh diakses jika sudah login
     this.currentUser = getCurrentUser();
     if (!this.currentUser) {
-      window.location.href = "login.html";
+      window.location.href = "https://daunggamer-sketch.github.io/banyuwangi-asyik/login.html";
       return;
     }
 
@@ -46,7 +46,7 @@ const Dashboard = {
       logoutUser();
       this.showToast("Berhasil keluar. Sampai jumpa!");
       setTimeout(() => {
-        window.location.href = "index.html";
+        window.location.href = "https://daunggamer-sketch.github.io/banyuwangi-asyik/index.html";
       }, 800);
     });
   },

@@ -1,0 +1,31 @@
+<svg width="520" height="140" viewBox="0 0 520 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F7D77A"/>
+      <stop offset="50%" stop-color="#F0B81B"/>
+      <stop offset="100%" stop-color="#D18A00"/>
+    </linearGradient>
+    <linearGradient id="goldSoft" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F7D77A"/>
+      <stop offset="100%" stop-color="#E4A321"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(8 10)">
+    <rect x="0" y="0" width="120" height="120" rx="28" fill="#121619"/>
+    <rect x="8" y="8" width="104" height="104" rx="22" stroke="url(#gold)" stroke-width="3"/>
+    <path d="M32 34C32 25.1634 39.1634 18 48 18H72C91.8823 18 108 34.1177 108 54C108 73.8823 91.8823 90 72 90H48C39.1634 90 32 82.8366 32 74V34Z" fill="url(#goldSoft)" opacity="0.14"/>
+    <path d="M58 30H74C88.3594 30 100 41.6406 100 56C100 70.3594 88.3594 82 74 82H58V30Z" fill="none" stroke="url(#gold)" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M58 30V90" stroke="url(#gold)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M65 42H73.5C80.9558 42 87 48.0447 87 55.5C87 62.9553 80.9558 69 73.5 69H65" stroke="#F6F1E6" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M20 96L28 82L36 96" stroke="url(#gold)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M36 96L44 82L52 96" stroke="url(#gold)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M52 96L60 82L68 96" stroke="url(#gold)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+
+  <g transform="translate(145 18)">
+    <text x="0" y="52" fill="#F5F5F5" font-family="Segoe UI, Arial, sans-serif" font-size="37" font-weight="800" letter-spacing="1.8">BANYUWANGI</text>
+    <text x="0" y="92" fill="url(#gold)" font-family="Segoe UI, Arial, sans-serif" font-size="29" font-weight="800" letter-spacing="2.2">ASYIK.COM</text>
+    <line x1="2" y1="102" x2="310" y2="102" stroke="rgba(247,215,122,0.7)" stroke-width="3"/>
+  </g>
+</svg>
