@@ -10,7 +10,7 @@
     readTime: 5,
     featured: true,
     breaking: true,
-    image: "assets/gandrung.png",
+    image: "assets/article-1.png",
     imageAlt: "Festival budaya di panggung terbuka Banyuwangi",
     content: `
       <p><strong>BANYUWANGI</strong> â€” Festival Gulung Sewu 2026 resmi ditutup dengan catatan gemilang. Panitia mencatat lebih dari 120 ribu pengunjung hadir selama tiga hari pelaksanaan, melampaui target awal sebesar 90 ribu orang.</p>
@@ -34,7 +34,7 @@
     readTime: 4,
     featured: false,
     breaking: false,
-    image: "assets/gandrung.png",
+    image: "assets/article-2.png",
     imageAlt: "Kapal kargo di pelabuhan",
     content: `
       <p><strong>JAKARTA</strong> â€” Konsorsium investor asal Jepang dan Indonesia resmi menandatangani nota kesepahaman untuk modernisasi Pelabuhan Gilimas, Banyuwangi, dengan nilai investasi mencapai Rp 2,1 triliun.</p>
@@ -53,7 +53,7 @@
     readTime: 3,
     featured: false,
     breaking: false,
-    image: "assets/gandrung.png",
+    image: "assets/article-3.png",
     imageAlt: "Pemain sepak bola merayakan gol",
     content: `
       <p><strong>BANYUWANGI</strong> â€” Persiba Banyuwangi akhirnya meraih gelar juara Liga Amatir Jawa Timur musim 2025/2026 setelah mengalahkan lawannya 2-1 dalam laga final yang berlangsung sengit di Stadion Diponegoro.</p>
@@ -71,7 +71,7 @@
     readTime: 3,
     featured: false,
     breaking: true,
-    image: "assets/gandrung.png",
+    image: "assets/article-4.png",
     imageAlt: "Hujan lebat dan genangan air",
     content: `
       <p><strong>BANYUWANGI</strong> â€” Badan Meteorologi, Klimatologi, dan Geofisika (BMKG) mengeluarkan peringatan dini cuaca ekstrem untuk Kabupaten Banyuwangi.</p>
@@ -90,7 +90,7 @@
     readTime: 4,
     featured: false,
     breaking: false,
-    image: "assets/gandrung.png",
+    image: "assets/article-5.png",
     imageAlt: "Biji kopi dan cangkir kopi",
     content: `
       <p><strong>BANYUWANGI</strong> â€” Kopi Oseng, varian kopi khas Banyuwangi yang diproses dengan metode tradisional, resmi diekspor perdana ke Belanda sebanyak 12 ton.</p>
@@ -108,7 +108,7 @@
     readTime: 3,
     featured: false,
     breaking: false,
-    image: "assets/gandrung.png",
+    image: "assets/article-6.png",
     imageAlt: "Siswa menggunakan tablet di kelas",
     content: `
       <p><strong>BANYUWANGI</strong> â€” Dinas Pendidikan Kabupaten Banyuwangi meluncurkan program Sekolah Digital dengan menyalurkan 1.000 unit tablet ke 45 sekolah dasar dan menengah.</p>
@@ -126,7 +126,7 @@
     readTime: 5,
     featured: false,
     breaking: false,
-    image: "assets/gandrung.png",
+    image: "assets/article-7.png",
     imageAlt: "Podium debat politik",
     content: `
       <p><strong>BANYUWANGI</strong> â€” Debate ketiga calon gubernur Jawa Timur digelar di Banyuwangi dengan tema "Ekonomi Kerakyatan dan Pemberdayaan Desa".</p>
@@ -144,7 +144,7 @@
     readTime: 4,
     featured: false,
     breaking: false,
-    image: "assets/gandrung.png",
+    image: "assets/article-8.png",
     imageAlt: "Penyu laut di pantai",
     content: `
       <p><strong>BANYUWANGI</strong> â€” Data Balai Konservasi Sumber Daya Alam (BKSDA) menunjukkan peningkatan populasi penyu hijau di Pantai Sukamade sebesar 23 persen dibanding lima tahun lalu.</p>
@@ -277,3 +277,6 @@ function getRelativeTime(dateStr) {
   if (diffDays === 1) return "Kemarin";
   return `${diffDays} hari lalu`;
 }
+
+
+
