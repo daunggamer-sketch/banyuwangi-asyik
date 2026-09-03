@@ -5,18 +5,23 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="robots" content="noindex, nofollow">
   <meta name="description" content="Daftar sebagai wartawan Banyuwangi Asyik Berita">
+  
+  <!-- Security Headers -->
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval' https://www.gstatic.com https://www.googletagmanager.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https: wss:;">
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta http-equiv="X-Frame-Options" content="SAMEORIGIN">
+  <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+  <meta http-equiv="Referrer-Policy" content="strict-origin-when-cross-origin">
+  <meta name="Permissions-Policy" content="geolocation=(), microphone=(), camera=(), payment=()">
+  
   <title>Daftar Wartawan — Banyuwangi Asyik Berita</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/style.css?v=20260829-2">
   <link rel="icon" href="assets/logo-banyuwangi-asyik.svg" type="image/svg+xml">
+  <link rel="canonical" href="https://daunggamer-sketch.github.io/banyuwangi-asyik/signup.html">
 
-  <!-- Firebase SDK -->
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
   <style>
     .auth-page {
       min-height: 100vh;
@@ -190,37 +195,32 @@
       <h1 class="auth-card__title">Daftar Wartawan</h1>
       <p class="auth-card__subtitle">Buat akun untuk mulai mengunggah berita, foto, dan video ke portal Banyuwangi Asyik Berita.</p>
 
-      <form class="auth-form" id="signup-form">
+      <form class="auth-form" id="signup-form" novalidate>
         <div class="auth-form__group">
           <label class="auth-form__label" for="signup-name">Nama Lengkap</label>
-          <input type="text" id="signup-name" class="auth-form__input" placeholder="Nama Anda" required autocomplete="name">
+          <input type="text" id="signup-name" class="auth-form__input" placeholder="Nama Anda" required autocomplete="name" minlength="3" maxlength="100">
         </div>
         <div class="auth-form__group">
           <label class="auth-form__label" for="signup-username">Username</label>
-          <input type="text" id="signup-username" class="auth-form__input" placeholder="username" required autocomplete="username" minlength="3">
+          <input type="text" id="signup-username" class="auth-form__input" placeholder="username" required autocomplete="username" minlength="3" maxlength="50" pattern="[a-zA-Z0-9_.-]+">
         </div>
         <div class="auth-form__group">
           <label class="auth-form__label" for="signup-email">Email</label>
-          <input type="email" id="signup-email" class="auth-form__input" placeholder="nama@email.com" required autocomplete="email">
+          <input type="email" id="signup-email" class="auth-form__input" placeholder="nama@email.com" required autocomplete="email" maxlength="100">
         </div>
         <div class="auth-form__group">
           <label class="auth-form__label" for="signup-password">Password</label>
-          <input type="password" id="signup-password" class="auth-form__input" placeholder="Minimal 6 karakter" required autocomplete="new-password" minlength="6">
+          <input type="password" id="signup-password" class="auth-form__input" placeholder="Minimal 8 karakter" required autocomplete="new-password" minlength="8" maxlength="128">
         </div>
         <div class="auth-form__group">
           <label class="auth-form__label" for="signup-confirm">Konfirmasi Password</label>
-          <input type="password" id="signup-confirm" class="auth-form__input" placeholder="Ulangi password" required autocomplete="new-password">
+          <input type="password" id="signup-confirm" class="auth-form__input" placeholder="Ulangi password" required autocomplete="new-password" minlength="8" maxlength="128">
         </div>
         <button type="submit" class="auth-form__btn">Daftar</button>
         <p class="auth-form__note">Dengan mendaftar, Anda menyetujui Pedoman Media Siber dan Kode Etik Jurnalistik.</p>
       </form>
 
-      <div id="signup-message"></div>
-
-      <div class="auth-card__demo">
-        <strong>Info Debug:</strong> Buka Console Browser (F12) untuk melihat detail error. 
-        Jika Firebase gagal, sistem otomatis menggunakan mode offline (localStorage).
-      </div>
+      <div id="signup-message" role="alert" aria-live="polite"></div>
 
       <div class="auth-card__footer">
         Sudah punya akun? <a href="login.html">Login di sini</a>
@@ -282,8 +282,8 @@
           showAuthMessage(messageEl, "Format email tidak valid.", "error");
           return;
         }
-        if (password.length < 6) {
-          showAuthMessage(messageEl, "Password minimal 6 karakter.", "error");
+        if (password.length < 8) {
+          showAuthMessage(messageEl, "Password minimal 8 karakter.", "error");
           return;
         }
         if (password !== confirm) {
@@ -292,19 +292,29 @@
         }
 
         console.log("Validation passed, calling registerUser...");
-        const result = registerUser({ name, username, email, password });
-        console.log("Register result:", result);
+        if (typeof registerUser !== 'undefined') {
+          const result = registerUser({ name, username, email, password });
+          console.log("Register result:", result);
 
-        if (result.success) {
-          showAuthMessage(messageEl, result.message, "success");
-          setTimeout(() => {
-            window.location.href = "https://daunggamer-sketch.github.io/banyuwangi-asyik/login.html";
-          }, 1500);
+          if (result.success) {
+            showAuthMessage(messageEl, result.message, "success");
+            setTimeout(() => {
+              window.location.href = "https://daunggamer-sketch.github.io/banyuwangi-asyik/login.html";
+            }, 1500);
+          } else {
+            showAuthMessage(messageEl, result.message, "error");
+          }
         } else {
-          showAuthMessage(messageEl, result.message, "error");
+          showAuthMessage(messageEl, "Sistem authentication belum siap. Silakan coba beberapa saat lagi.", "error");
         }
       });
     });
+
+    function showAuthMessage(el, message, type) {
+      if (!el) return;
+      el.textContent = message;
+      el.className = `auth-message auth-message--${type}`;
+    }
   </script>
 </body>
 </html>
